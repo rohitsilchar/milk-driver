@@ -8,6 +8,7 @@ import 'package:water/Utils/whitespaceutils.dart';
 import 'package:water/Utils/widgets/arrowbutton.dart';
 import 'package:water/Utils/widgets/shadowedcontainer.dart';
 import 'package:water/main.dart';
+import 'package:water/utils/app_state.dart';
 import 'package:water/utils/color_utils.dart';
 import 'package:water/utils/uttil_helper.dart';
 
@@ -21,11 +22,6 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  @override
-  void initState() {
-    super.initState();
-  }
-
   void onTap() {
     isObs = !isObs;
     setState(() {});
@@ -38,6 +34,13 @@ class _LoginScreenState extends State<LoginScreen> {
 
   bool isBusy = false;
   bool isObs = false;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    UtilsHelper.loadLocalization(appState.currentLanguageCode.value);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,17 +59,16 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: Column(
                   children: [
                     const SizedBox(width: double.infinity),
-                    Text( UtilsHelper.getString(context, 'sign_in'),
+                    Text(UtilsHelper.getString(context, 'sign_in'),
                         style: FontStyleUtilities.h4(fontWeight: FWT.bold)),
                     SpaceUtils.ks40.height(),
                     SizedBox(
                       height: 55,
                       child: MyTextField(
-                        icon: IconUtil.email,
-                        hint:  UtilsHelper.getString(context, 'phone_number'),
-                        controller: authController.emailController.value,
-                        length : 10
-                      ),
+                          icon: IconUtil.email,
+                          hint: UtilsHelper.getString(context, 'phone_number'),
+                          controller: authController.emailController.value,
+                          length: 10),
                     ),
                     SpaceUtils.ks20.height(),
                     SizedBox(
@@ -99,7 +101,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               FocusScope.of(context).unfocus();
                               loginService(context);
                             },
-                            tittle:  UtilsHelper.getString(context, 'sign_in'),
+                            tittle: UtilsHelper.getString(context, 'sign_in'),
                           )
                         : const CircularProgressIndicator(
                             color: ColorUtils.kcPrimary,

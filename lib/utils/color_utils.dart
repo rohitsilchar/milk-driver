@@ -11,7 +11,8 @@ class ColorUtils {
   static const Color kcSecondary = Color.fromRGBO(6, 40, 61, 1);
   //  Color(0xff3F305E);
 
-  static const Color kcPrimary=  Color.fromRGBO(175, 122, 179, 1);
+  // static const Color kcPrimary=  Color.fromRGBO(175, 122, 179, 1);
+  static const Color kcPrimary = Color.fromRGBO(52, 158, 216, 1);
   //  Color(0xffB3874B);
 
   ///DIVIDER COLOR...

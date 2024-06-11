@@ -23,6 +23,9 @@ class AuthController extends GetxController {
   Rx<TextEditingController> forgotEmailController = TextEditingController().obs;
   Rx<TextEditingController> passController = TextEditingController().obs;
 
+  Rx<TextEditingController> phoneController = TextEditingController().obs;
+  Rx<TextEditingController> otpController = TextEditingController().obs;
+
   RxList<OrderStatus> orderStatusList = <OrderStatus>[].obs;
 
   // profile
@@ -31,7 +34,7 @@ class AuthController extends GetxController {
   RxBool logOutLoading = false.obs;
 
   getFromPrefs() async {
-  //  deviceToken.value = (await FirebaseMessaging.instance.getToken())!;
+    //  deviceToken.value = (await FirebaseMessaging.instance.getToken())!;
     final box = GetStorage();
     if (box.read("token") != null) {
       token.value = await box.read("token");

@@ -10,20 +10,21 @@ class SettingData {
   List<LanguageItem>? languages;
   SettingItem? setting;
 
-  factory SettingData.fromJson(Map<String, dynamic> json)  { 
-     Map<String,dynamic> data = {};
-      json["setting"].forEach((x) { 
-        data[x['key']] = x['value'];
-      });
+  factory SettingData.fromJson(Map<String, dynamic> json) {
+    Map<String, dynamic> data = {};
+    json["setting"].forEach((x) {
+      data[x['key']] = x['value'];
+    });
     print(data.toString());
-   return SettingData(
-    setting:data.isNotEmpty ? SettingItem.fromJson(data) : null,
-    languages: List<LanguageItem>.from(json["languages"].map((x) => LanguageItem.fromJson(x))),
-   );
+    return SettingData(
+      setting: data.isNotEmpty ? SettingItem.fromJson(data) : null,
+      languages: List<LanguageItem>.from(
+          json["languages"].map((x) => LanguageItem.fromJson(x))),
+    );
   }
 
   Map<String, dynamic> toJson() => {
-     "setting": setting!.toJson(),
-    "languages": List<dynamic>.from(languages!.map((x) => x.toJson())),
-  };
+        "setting": setting!.toJson(),
+        "languages": List<dynamic>.from(languages!.map((x) => x.toJson())),
+      };
 }

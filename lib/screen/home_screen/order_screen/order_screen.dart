@@ -35,6 +35,7 @@ class _OrderListState extends State<OrderList> {
   void initState() {
     controller = ScrollController()..addListener(_scrollListener);
     super.initState();
+    UtilsHelper.loadLocalization(appState.currentLanguageCode.value);
   }
 
   void _scrollListener() {
@@ -56,15 +57,16 @@ class _OrderListState extends State<OrderList> {
   Widget build(BuildContext context) {
     return StackedScaffold(
       stackedEntries: const [],
-      tittle: widget.orderHistory ? "${UtilsHelper.getString(context, 'order_text')} ${UtilsHelper.getString(context, 'history')}" 
-      :  UtilsHelper.getString(context, 'your_orders'),
+      tittle: widget.orderHistory
+          ? "${UtilsHelper.getString(context, 'Order')} ${UtilsHelper.getString(context, 'History')}"
+          : UtilsHelper.getString(context, 'your_orders'),
       actionIcon: Stack(
         children: [
           Transform.scale(
             scale: .8,
             child: CustomIconButton(
               path: IconUtil.bell,
-             color: dark(context) ? Colors.white : ColorUtils.kcSecondary,
+              color: dark(context) ? Colors.white : ColorUtils.kcSecondary,
               onTap: () {
                 getNotificationApi(url: "");
                 Get.to(() => const NotificationScreen());
@@ -100,9 +102,9 @@ class _OrderListState extends State<OrderList> {
             // ignore: prefer_is_empty
             : homeController.orderList.length > 0
                 ? ValueListenableBuilder<SettingData>(
-                  valueListenable: appState.setting,
-                  builder: (context,sets,child) {
-                    return SingleChildScrollView(
+                    valueListenable: appState.setting,
+                    builder: (context, sets, child) {
+                      return SingleChildScrollView(
                         controller: controller,
                         physics: const BouncingScrollPhysics(),
                         child: Column(
@@ -114,7 +116,9 @@ class _OrderListState extends State<OrderList> {
                                 itemCount: homeController.orderList.length,
                                 itemBuilder: (context, i) => OrderTile(
                                       orderData: homeController.orderList[i],
-                                      currency: sets.setting != null ? sets.setting!.defaultCurrencyCode : "\$",
+                                      currency: sets.setting != null
+                                          ? sets.setting!.defaultCurrencyCode
+                                          : "\$",
                                       orderHistory: widget.orderHistory,
                                     )),
                             Obx(() => homeController.paginationLoading.isTrue
@@ -127,12 +131,11 @@ class _OrderListState extends State<OrderList> {
                                         )),
                                   )
                                 : const SizedBox()),
-                                 SpaceUtils.ks50.height(),
+                            SpaceUtils.ks50.height(),
                           ],
                         ),
                       );
-                  }
-                )
+                    })
                 : Center(
                     child: Padding(
                       padding: const EdgeInsets.only(top: 50),

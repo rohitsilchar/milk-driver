@@ -26,12 +26,15 @@ Future getOrderApi({url, orderHistory}) async {
     apiUrl = url.toString();
   }
 
+  print("This is Api url order function $apiUrl");
+
   http.Response response = await ApiHandler.get(
     apiUrl,
     useBaseUrl: url.toString() == "" || url.toString() == null ? true : false,
   );
   // print("ORDER LIST ::: ${response.statusCode}");
-  // print("ORDER LIST::: ${response.body}");
+  print(response.body);
+  print("ORDER LIST::: ${response.body}");
 
   if (response.statusCode == 200) {
     if (url.toString() == "" || url.toString() == null) {
@@ -41,9 +44,9 @@ Future getOrderApi({url, orderHistory}) async {
 
     // ignore: avoid_function_literals_in_foreach_calls
     getOrderModel.data!.data!.forEach((element) {
-      homeController.orderList.add(element); 
+      homeController.orderList.add(element);
     });
-    
+
     homeController.nextUrl.value = getOrderModel.data!.nextPageUrl.toString();
     homeController.orderLoading.value = false;
     if (getOrderModel.data!.nextPageUrl.toString() != "null") {
@@ -56,10 +59,8 @@ Future getOrderApi({url, orderHistory}) async {
   }
 }
 
-
-
 Future getOrderDetail({url}) async {
- // HomeController homeController = Get.put(HomeController());
+  // HomeController homeController = Get.put(HomeController());
 
   // if (url.toString() == "" || url.toString() == null) {
   //   homeController.orderLoading.value = true;
@@ -68,18 +69,15 @@ Future getOrderDetail({url}) async {
   // }
 
   // ignore: prefer_interpolation_to_compose_strings
-  var apiUrl = "${ApiUrls.orderDetail}/"+url;
-
+  var apiUrl = "${ApiUrls.orderDetail}/" + url;
 
   http.Response response = await ApiHandler.get(
     apiUrl,
   );
 
   if (response.statusCode == 200) {
-  
     Datum getOrderModel = Datum.fromJson(json.decode(response.body)['data']);
     // ignore: avoid_function_literals_in_foreach_calls
     return getOrderModel;
-   
-  } 
+  }
 }

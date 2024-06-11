@@ -138,19 +138,18 @@ class Datum {
   List<ProductOrders>? productOrders;
   User? user;
   //Order? order;
-  int?  deliveryAddressId;
-  int?  paymentId;
-  int?  promotionalDisount;
-  int?  isCouponApplied;
-  String?  couponCode;
-  double?  subtotal;
-  double?  finalAmount;
-  double?  tax;
-  double?  deliveryFee;
-  String?  paymentMethod;
-  int?  timeslotId;
+  int? deliveryAddressId;
+  int? paymentId;
+  int? promotionalDisount;
+  int? isCouponApplied;
+  String? couponCode;
+  double? subtotal;
+  double? finalAmount;
+  double? tax;
+  double? deliveryFee;
+  String? paymentMethod;
+  int? timeslotId;
   DeliveryAddress? deliveryAddress;
-
 
   factory Datum.fromJson(Map<String, dynamic> json) => Datum(
         id: json["id"],
@@ -159,25 +158,44 @@ class Datum {
         driverId: json["driver_id"],
         productOrderId: json["product_order_id"],
         productId: json["product_id"],
-        deliveryAddressId : json['delivery_address_id'],
-        paymentId : json['payment_id'] != null ?  int.parse(json['payment_id'].toString()) : null,
-        promotionalDisount : json['promotional_disount'],
-        isCouponApplied : json['is_coupon_applied'],
-        couponCode : json['coupon_code'],
-        subtotal : json['sub_total'] != null ? double.parse(json['sub_total']!.toString()) : 0.0,
-        finalAmount :json['final_amount'] != null ? double.parse(json['final_amount']!.toString()) : 0.0,
-        tax : json['tax'] != null ? double.parse(json['tax']!.toString()) : 0.0,
-        deliveryFee : json['delivery_fee'] != null ? double.parse(json['delivery_fee']!.toString()) : 0.0,
-        paymentMethod :  json['payment_method'],
-        timeslotId : json['time_slot_id'],
-        deliveryDate: json["delivery_date"] != null ? DateTime.parse(json["delivery_date"]): null,
+        deliveryAddressId: json['delivery_address_id'],
+        paymentId: json['payment_id'] != null
+            ? int.parse(json['payment_id'].toString())
+            : null,
+        promotionalDisount: json['promotional_disount'],
+        isCouponApplied: json['is_coupon_applied'],
+        couponCode: json['coupon_code'],
+        subtotal: json['sub_total'] != null
+            ? double.parse(json['sub_total']!.toString())
+            : 0.0,
+        finalAmount: json['final_amount'] != null
+            ? double.parse(json['final_amount']!.toString())
+            : 0.0,
+        tax: json['tax'] != null ? double.parse(json['tax']!.toString()) : 0.0,
+        deliveryFee: json['delivery_fee'] != null
+            ? double.parse(json['delivery_fee']!.toString())
+            : 0.0,
+        paymentMethod: json['payment_method'],
+        timeslotId: json['time_slot_id'],
+        deliveryDate: json["delivery_date"] != null
+            ? DateTime.parse(json["delivery_date"])
+            : null,
         orderStatusId: json["order_status_id"],
-        createdAt: json["created_at"] != null ? DateTime.parse(json["created_at"]) : null,
-        updatedAt:json["updated_at"] != null ? DateTime.parse(json["updated_at"]) : null,
-        productOrders:json["product_orders_driver"] !=null ? List<ProductOrders>.from(json["product_orders_driver"].map((e)=> ProductOrders.fromJson(e))).toList() : [],
+        createdAt: json["created_at"] != null
+            ? DateTime.parse(json["created_at"])
+            : null,
+        updatedAt: json["updated_at"] != null
+            ? DateTime.parse(json["updated_at"])
+            : null,
+        productOrders: json["product_orders_driver"] != null
+            ? List<ProductOrders>.from(json["product_orders_driver"]
+                .map((e) => ProductOrders.fromJson(e))).toList()
+            : [],
         // deliveryStatus: List<DeliveryStatus>.from(json['product_deliverys'].map((e)=>DeliveryStatus.fromJson(e["delivery_status"]))),
         user: User.fromJson(json["user_only"]),
-        deliveryAddress: json["delivery_address"] != null ? DeliveryAddress.fromJson(json["delivery_address"]) : DeliveryAddress(),
+        deliveryAddress: json["delivery_address"] != null
+            ? DeliveryAddress.fromJson(json["delivery_address"])
+            : DeliveryAddress(),
         // order: Order.fromJson(json["order"]),
       );
 
@@ -192,7 +210,7 @@ class Datum {
         "order_status_id": orderStatusId,
         "created_at": createdAt!.toIso8601String(),
         "updated_at": updatedAt!.toIso8601String(),
-        "product_orders":  productOrders!.map((e)=>e.toJson()) ,
+        "product_orders": productOrders!.map((e) => e.toJson()),
         "user": user!.toJson(),
         // "order": order!.toJson(),
       };
@@ -282,7 +300,9 @@ class Order {
         timeslotId: json["timeslot_id"],
         createdAt: DateTime.parse(json["created_at"]),
         updatedAt: DateTime.parse(json["updated_at"].toString()),
-        deliveryAddress: json["delivery_address"] != null ? DeliveryAddress.fromJson(json["delivery_address"]) : DeliveryAddress(),
+        deliveryAddress: json["delivery_address"] != null
+            ? DeliveryAddress.fromJson(json["delivery_address"])
+            : DeliveryAddress(),
       );
 
   Map<String, dynamic> toJson() => {
@@ -440,10 +460,13 @@ class ProductOrders {
         days: json["days"],
         startDate: DateTime.parse(json["start_date"]),
         endDate: DateTime.parse(json["end_date"]),
-        deliveryStatus: List<DeliveryStatus>.from(json['product_deliverys_status'].map((e)=>DeliveryStatus.fromJson(e["delivery_status"]))),
+        deliveryStatus: List<DeliveryStatus>.from(
+            json['product_deliverys_status']
+                .map((e) => DeliveryStatus.fromJson(e["delivery_status"]))),
         createdAt: DateTime.parse(json["created_at"]),
         updatedAt: json["updated_at"],
-        product: json["product"] != null ? Product.fromJson(json["product"]) : null,
+        product:
+            json["product"] != null ? Product.fromJson(json["product"]) : null,
       );
 
   Map<String, dynamic> toJson() => {
@@ -505,8 +528,14 @@ class Product {
         description: json["description"],
         minimumOrderQuantity: json["minimum_order_quantity"],
         status: json["status"],
-        createdAt: DateTime.parse(json["created_at"]),
-        updatedAt: DateTime.parse(json["updated_at"]),
+        // createdAt: DateTime.parse(json["created_at"]),
+        // updatedAt: DateTime.parse(json["updated_at"]),
+        createdAt: json["created_at"] != null
+            ? DateTime.parse(json["created_at"])
+            : null,
+        updatedAt: json["updated_at"] != null
+            ? DateTime.parse(json["updated_at"])
+            : null,
       );
 
   Map<String, dynamic> toJson() => {
@@ -570,7 +599,9 @@ class User {
         enableNotificaton: json["enable_notificaton"],
         otp: json["otp"],
         status: json["status"],
-        createdAt: json["created_at"] != null ?DateTime.parse(json["created_at"]) : DateTime.now(),
+        createdAt: json["created_at"] != null
+            ? DateTime.parse(json["created_at"])
+            : DateTime.now(),
         updatedAt: DateTime.parse(json["updated_at"].toString()),
       );
 

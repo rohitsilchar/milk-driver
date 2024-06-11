@@ -47,6 +47,8 @@ class OrderDetails extends StatefulWidget {
 class _OrderDetailsState extends State<OrderDetails> {
   HomeController homeController = Get.put(HomeController());
 
+  String dropdownValue = 'No';
+
   int selectedIndex = 1;
   late Datum order;
 
@@ -61,36 +63,42 @@ class _OrderDetailsState extends State<OrderDetails> {
   _launchCaller({mobileNumber}) async {
     var url = "tel:$mobileNumber";
     // if (await canLaunchUrl(Uri.parse(url))) {
-      await launchUrl(Uri.parse(url));
+    await launchUrl(Uri.parse(url));
     // } else {
     //   throw 'Could not launch $url';
     // }
   }
 
- 
-
   @override
   void initState() {
     super.initState();
-    order  = widget.orderData;
-    selectedStatus = widget.orderData.productOrders![0].deliveryStatus != null 
-     && widget.orderData.productOrders![0].deliveryStatus != null && widget.orderData.productOrders![0].deliveryStatus!.isNotEmpty ? 
-    widget.orderData.productOrders![0].deliveryStatus![0].status!  : '';
-    selectedStatusId = widget.orderData.productOrders![0].deliveryStatus != null 
-    && widget.orderData.productOrders![0].deliveryStatus!.isNotEmpty ? 
-    widget.orderData.productOrders![0].deliveryStatus![0].id.toString()  : null;
+    order = widget.orderData;
+    selectedStatus =
+        widget.orderData.productOrders![0].deliveryStatus != null &&
+                widget.orderData.productOrders![0].deliveryStatus != null &&
+                widget.orderData.productOrders![0].deliveryStatus!.isNotEmpty
+            ? widget.orderData.productOrders![0].deliveryStatus![0].status!
+            : '';
+    selectedStatusId = widget.orderData.productOrders![0].deliveryStatus !=
+                null &&
+            widget.orderData.productOrders![0].deliveryStatus!.isNotEmpty
+        ? widget.orderData.productOrders![0].deliveryStatus![0].id.toString()
+        : null;
 
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async{
-      if ( widget.orderData.productOrders![0].deliveryStatus == null) {
-         await getOrderDetail(url: widget.orderData.id.toString()).then((value) {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+      if (widget.orderData.productOrders![0].deliveryStatus == null) {
+        await getOrderDetail(url: widget.orderData.id.toString()).then((value) {
           order = value;
-          selectedStatus = order.productOrders![0].deliveryStatus != null ? order.productOrders![0].deliveryStatus![0].status!  : '';
-          selectedStatusId =order.productOrders![0].deliveryStatus != null ? order.productOrders![0].deliveryStatus![0].toString()  :null;
+          selectedStatus = order.productOrders![0].deliveryStatus != null
+              ? order.productOrders![0].deliveryStatus![0].status!
+              : '';
+          selectedStatusId = order.productOrders![0].deliveryStatus != null
+              ? order.productOrders![0].deliveryStatus![0].toString()
+              : null;
           setState(() {});
-       });
+        });
       }
     });
-
   }
 
   @override
@@ -137,24 +145,26 @@ class _OrderDetailsState extends State<OrderDetails> {
         leadingIcon: Material(
           color: Colors.transparent,
           shape: RoundedRectangleBorder(
-             borderRadius: BorderRadius.circular(100),
+            borderRadius: BorderRadius.circular(100),
           ),
-          child:  InkResponse(
+          child: InkResponse(
             customBorder: RoundedRectangleBorder(
-             borderRadius: BorderRadius.circular(100),
-          ),
-              onTap: () {
-                Get.back();
-                if (widget.orderHistory == false) {
-                  getOrderApi(url: "", orderHistory: widget.orderHistory);
-                }
-              },
-              child: Ink(
-                padding: const EdgeInsets.all(14),
-                child:Icon(UtilsHelper.rightHandLang.contains(appState.currentLanguageCode.value)? 
-               Icons.arrow_forward
-              :Icons.arrow_back,
-              color :isDark.value ? Colors.white : ColorUtils.kcSecondary),
+              borderRadius: BorderRadius.circular(100),
+            ),
+            onTap: () {
+              Get.back();
+              if (widget.orderHistory == false) {
+                getOrderApi(url: "", orderHistory: widget.orderHistory);
+              }
+            },
+            child: Ink(
+              padding: const EdgeInsets.all(14),
+              child: Icon(
+                  UtilsHelper.rightHandLang
+                          .contains(appState.currentLanguageCode.value)
+                      ? Icons.arrow_forward
+                      : Icons.arrow_back,
+                  color: isDark.value ? Colors.white : ColorUtils.kcSecondary),
             ),
           ),
         ),
@@ -167,72 +177,86 @@ class _OrderDetailsState extends State<OrderDetails> {
                 children: [
                   SpaceUtils.ks18.height(),
                   SpaceUtils.ks120.height(),
-                  order.productOrders == null 
-                  ? const ShimmerLoader(height: 100)
-                  : orderDetailFirstTile(orderData: order),
+                  order.productOrders == null
+                      ? const ShimmerLoader(height: 100)
+                      : orderDetailFirstTile(orderData: order),
                   SpaceUtils.ks24.height(),
-                   order.productOrders == null 
-                  ? SizedBox(
-                    width: MediaQuery.of(context).size.width,
-                    child: const Row(
-                      children: [
-                        Expanded(child: ShimmerLoader(height: 60)),
-                        Expanded(child:ShimmerLoader(height: 60)),
-                      ],
-                    ),
-                  )
-                  : Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 27),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          flex: 4,
-                          child: ArrowButton(
-                            isUpdate:true,
-                            onTap: () => setIndex(1),
-                            tittle: UtilsHelper.getString(context,'ordered_products') ,
-                            color: selectedIndex == 1
-                                ? ColorUtils.kcPrimary
-                                : isDark.value  ? ColorUtils.kcBlack.withOpacity(0.34) :ColorUtils.kcLightTextColor,
+                  order.productOrders == null
+                      ? SizedBox(
+                          width: MediaQuery.of(context).size.width,
+                          child: const Row(
+                            children: [
+                              Expanded(child: ShimmerLoader(height: 60)),
+                              Expanded(child: ShimmerLoader(height: 60)),
+                            ],
                           ),
-                        ),
-                        SpaceUtils.ks10.width(),
-                        Expanded(
-                          flex: 3,
-                          child: ArrowButton(
-                            isUpdate: true,
-                            onTap: () => setIndex(0),
-                            tittle: UtilsHelper.getString(context,'customer') ,
-                            color: selectedIndex == 0
-                                ? ColorUtils.kcPrimary
-                                : isDark.value  ? ColorUtils.kcBlack.withOpacity(0.34) :ColorUtils.kcLightTextColor,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  SpaceUtils.ks24.height(),
-                  order.productOrders == null 
-                  ? const ShimmerLoader(height: 250)
-                  : selectedIndex == 0
-                      ? secondTile(orderDetail: order)
+                        )
                       : Padding(
-                        padding: const EdgeInsets.only(left: 27, right: 27),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children:[
-                             Text(
-                              UtilsHelper.getString(context,'products') ,
-                              style: FontStyleUtilities.h5(fontWeight: FWT.semiBold),
-                            ),
-                            SpaceUtils.ks10.height(),
-                          ...order.productOrders!.map((e)=> productsTile(orderDetail: e)) 
-                        ]),
-                      ),
+                          padding: const EdgeInsets.symmetric(horizontal: 27),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                flex: 4,
+                                child: ArrowButton(
+                                  isUpdate: true,
+                                  onTap: () => setIndex(1),
+                                  tittle: UtilsHelper.getString(
+                                      context, 'ordered_products'),
+                                  color: selectedIndex == 1
+                                      ? ColorUtils.kcPrimary
+                                      : isDark.value
+                                          ? ColorUtils.kcBlack.withOpacity(0.34)
+                                          : ColorUtils.kcLightTextColor,
+                                ),
+                              ),
+                              SpaceUtils.ks10.width(),
+                              Expanded(
+                                flex: 3,
+                                child: ArrowButton(
+                                  isUpdate: true,
+                                  onTap: () => setIndex(0),
+                                  tittle: UtilsHelper.getString(
+                                      context, 'customer'),
+                                  color: selectedIndex == 0
+                                      ? ColorUtils.kcPrimary
+                                      : isDark.value
+                                          ? ColorUtils.kcBlack.withOpacity(0.34)
+                                          : ColorUtils.kcLightTextColor,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                   SpaceUtils.ks24.height(),
-                  order.productOrders == null 
-                  ? const ShimmerLoader(height: 250)
-                  : paymentSummary(orderDetail: order),
+                  order.productOrders == null
+                      ? const ShimmerLoader(height: 250)
+                      : selectedIndex == 0
+                          ? secondTile(orderDetail: order)
+                          : Padding(
+                              padding:
+                                  const EdgeInsets.only(left: 27, right: 27),
+                              child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      UtilsHelper.getString(
+                                          context, 'products'),
+                                      style: FontStyleUtilities.h5(
+                                          fontWeight: FWT.semiBold),
+                                    ),
+                                    SpaceUtils.ks10.height(),
+                                    ...order.productOrders!.map(
+                                        (e) => productsTile(orderDetail: e))
+                                  ]),
+                            ),
+                  SpaceUtils.ks24.height(),
+                  order.productOrders == null
+                      ? const ShimmerLoader(height: 250)
+                      : paymentSummary(orderDetail: order),
+                  SpaceUtils.ks24.height(),
+                  order.productOrders == null
+                      ? const ShimmerLoader(height: 250)
+                      : collectedSummary(orderDetail: order),
                   SpaceUtils.ks40.height(),
                 ],
               ),
@@ -254,7 +278,7 @@ class _OrderDetailsState extends State<OrderDetails> {
         children: [
           secondTileSubTile(
             tap: () {},
-            title: UtilsHelper.getString(context,'name') ,
+            title: UtilsHelper.getString(context, 'name'),
             description: orderDetail.user!.name != null
                 ? orderDetail.user!.name.toString()
                 : "         --",
@@ -268,29 +292,29 @@ class _OrderDetailsState extends State<OrderDetails> {
               } else {
                 Get.to(
                   () => MapScreen(
-                    userLongitude: double.parse(orderDetail
-                        .deliveryAddress!.longitude
-                        .toString()),
-                    userLatitude: double.parse(orderDetail
-                        .deliveryAddress!.latitude
-                        .toString()),
-                    date:"${formatter.format(DateTime.parse(orderDetail.createdAt.toString()))} | ${formatter1.format(DateTime.parse(orderDetail.createdAt.toString()))}",
+                    userLongitude: double.parse(
+                        orderDetail.deliveryAddress!.longitude.toString()),
+                    userLatitude: double.parse(
+                        orderDetail.deliveryAddress!.latitude.toString()),
+                    date:
+                        "${formatter.format(DateTime.parse(orderDetail.createdAt.toString()))} | ${formatter1.format(DateTime.parse(orderDetail.createdAt.toString()))}",
                     items: orderDetail.productOrders!.length.toString(),
                     paymentMethod: orderDetail.paymentMethod.toString(),
                   ),
                 );
               }
             },
-            title: UtilsHelper.getString(context,'delivery_address'),
-            description:
-                orderDetail.deliveryAddress!.googleAddress ?? "",
+            title: UtilsHelper.getString(context, 'delivery_address'),
+            description: orderDetail.deliveryAddress!.googleAddress ?? "",
             path: IconUtil.location,
           ),
           secondTileSubTile(
-            tap: () async{
-             await _launchCaller(mobileNumber: orderDetail.user!.phone.toString());
+            tap: () async {
+              await _launchCaller(
+                  mobileNumber: orderDetail.user!.phone.toString());
             },
-            title: UtilsHelper.getString(context,'phone_number') ?? 'Phone Number ',
+            title: UtilsHelper.getString(context, 'phone_number') ??
+                'Phone Number ',
             description: orderDetail.user!.phone != null
                 ? orderDetail.user!.phone.toString()
                 : "",
@@ -346,10 +370,12 @@ class _OrderDetailsState extends State<OrderDetails> {
   }
 
   Widget productsTile({required ProductOrders orderDetail}) {
+    print(
+        "${ApiUrls.basicUrl}app-assets/images/products/${orderDetail.product!.image}");
     return CommonShadowContainer(
-      height: 90,
-      width:MediaQuery.of(context).size.width,
-      padding: const EdgeInsets.symmetric(horizontal: 12,vertical: 8),
+      height: 110,
+      width: MediaQuery.of(context).size.width,
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       child: Column(
         children: [
           // SpaceUtils.ks8.height(),
@@ -363,21 +389,22 @@ class _OrderDetailsState extends State<OrderDetails> {
                     height: 60,
                     width: 60,
                     child: CachedNetworkImage(
-                           imageUrl :"${ApiUrls.waterUrl}app-assets/images/products/${orderDetail.product!.image}",
-                            placeholder:(context, url) {
-                              return const ShimmerLoader(
-                                width: 60,
-                                height: 60,
-                                margin: EdgeInsets.zero,
-                              );
-                            },
-                            errorWidget: (context, url, error) {
-                              return Image.asset(
-                                "asset/images/failure_toast.png",
-                                fit: BoxFit.contain,
-                              );
-                            },
-                          ),
+                      imageUrl:
+                          "${ApiUrls.basicUrl}app-assets/images/products/${orderDetail.product!.image}",
+                      placeholder: (context, url) {
+                        return const ShimmerLoader(
+                          width: 60,
+                          height: 60,
+                          margin: EdgeInsets.zero,
+                        );
+                      },
+                      errorWidget: (context, url, error) {
+                        return Image.asset(
+                          "asset/images/failure_toast.png",
+                          fit: BoxFit.contain,
+                        );
+                      },
+                    ),
                   ),
                 ),
                 SpaceUtils.ks8.width(),
@@ -387,24 +414,36 @@ class _OrderDetailsState extends State<OrderDetails> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                         orderDetail.product == null  ? '' : orderDetail.product!.name.toString(),
-                        style:FontStyleUtilities.h6(fontWeight: FWT.semiBold),
+                        orderDetail.product == null
+                            ? ''
+                            : orderDetail.product!.name.toString(),
+                        style: FontStyleUtilities.h6(fontWeight: FWT.semiBold),
                       ),
-                     SpaceUtils.ks8.height(),
-                       orderDetail.product != null  &&  orderDetail.product!.discountPrice.toString() !="null" &&
-                    orderDetail.product!.discountPrice.toString() !="0" &&
-                    orderDetail.product!.discountPrice.toString() !="0.0" ? Text(
-                    ' ${orderDetail.product!.discountPrice.toString()} ${appState.setting.value.setting!.defaultCurrencyCode}  x  ${orderDetail.quantity.toString()}',
-                    textAlign: TextAlign.right,style: FontStyleUtilities.t1(),):orderDetail.product == null  ? const Text('') :  Text(
-                    '${orderDetail.product!.price.toString()} ${appState.setting.value.setting!.defaultCurrencyCode}  x  ${orderDetail.quantity.toString()}',
-                      style: FontStyleUtilities.p1(),
-                    textAlign: TextAlign.right)
+                      SpaceUtils.ks8.height(),
+                      orderDetail.product != null &&
+                              orderDetail.product!.discountPrice.toString() !=
+                                  "null" &&
+                              orderDetail.product!.discountPrice.toString() !=
+                                  "0" &&
+                              orderDetail.product!.discountPrice.toString() !=
+                                  "0.0"
+                          ? Text(
+                              ' ${orderDetail.product!.discountPrice.toString()} ${appState.setting.value.setting!.defaultCurrencyCode}  x  ${orderDetail.quantity.toString()}',
+                              textAlign: TextAlign.right,
+                              style: FontStyleUtilities.t1(),
+                            )
+                          : orderDetail.product == null
+                              ? const Text('')
+                              : Text(
+                                  '${orderDetail.product!.price.toString()} ${appState.setting.value.setting!.defaultCurrencyCode}  x  ${orderDetail.quantity.toString()}',
+                                  style: FontStyleUtilities.p1(),
+                                  textAlign: TextAlign.right)
                     ],
                   ),
                 ),
                 // const Spacer(),
                 //  Checkbox.adaptive(
-                //   value: , 
+                //   value: ,
                 //   onChanged: (val){
 
                 //   })
@@ -427,14 +466,14 @@ class _OrderDetailsState extends State<OrderDetails> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                '${UtilsHelper.getString(context,'order_id')}: #${orderData.id.toString()}',
+                '${UtilsHelper.getString(context, 'order_id')}: #${orderData.id.toString()}',
                 style: FontStyleUtilities.t1(
                   fontColor: ColorUtils.kcLightTextColor,
                   fontWeight: FWT.bold,
                 ),
               ),
               Text(
-                 '${orderData.finalAmount.toString()}  ${appState.setting.value.setting!.defaultCurrencyCode}',
+                '${orderData.finalAmount.toString()}  ${appState.setting.value.setting!.defaultCurrencyCode}',
                 style: FontStyleUtilities.h5(fontWeight: FWT.bold),
               )
             ],
@@ -444,13 +483,19 @@ class _OrderDetailsState extends State<OrderDetails> {
             children: [
               Expanded(
                 child: Text(
-                 UtilsHelper.getString(context,selectedStatus.toLowerCase().toString().split(' ').join('_')),
+                  UtilsHelper.getString(
+                      context,
+                      selectedStatus
+                          .toLowerCase()
+                          .toString()
+                          .split(' ')
+                          .join('_')),
                   style: FontStyleUtilities.h5(fontWeight: FWT.bold),
                 ),
               ),
               const SizedBox(width: 6),
               Text(
-                '${orderData.productOrders!.length.toString()} ${UtilsHelper.getString(context,'items')}',
+                '${orderData.productOrders!.length.toString()} ${UtilsHelper.getString(context, 'items')}',
                 style: FontStyleUtilities.t1(
                   fontColor: ColorUtils.kcLightTextColor,
                 ),
@@ -548,7 +593,8 @@ class _OrderDetailsState extends State<OrderDetails> {
           if (newValue != null) {
             selectedStatusId = newValue;
             setState(() {});
-            changeStatus(statusId: selectedStatusId, orderId: widget.orderData.id);
+            changeStatus(
+                statusId: selectedStatusId, orderId: widget.orderData.id);
           }
         },
         items: authController.orderStatusList
@@ -560,9 +606,80 @@ class _OrderDetailsState extends State<OrderDetails> {
               print(selectedStatus);
             },
             value: value.id.toString(),
-            child: Text(appState.languageKeys.containsKey(value.status!.toLowerCase().split(' ').join('_'))  ? 
-              UtilsHelper.getString(context, value.status!.toLowerCase().split(' ').join('_'))
-             : value.status!),
+            child: Text(appState.languageKeys.containsKey(
+                    value.status!.toLowerCase().split(' ').join('_'))
+                ? UtilsHelper.getString(
+                    context, value.status!.toLowerCase().split(' ').join('_'))
+                : value.status!),
+          );
+        }).toList(),
+      ),
+    );
+  }
+
+  Widget collectedSummary({required Datum orderDetail}) {
+    return CommonShadowContainer(
+      margin: const EdgeInsets.symmetric(horizontal: 27),
+      padding: const EdgeInsets.all(15),
+      child: Column(
+        children: [
+          SpaceUtils.ks10.height(),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                  UtilsHelper.getString(context, 'Have You Collected Bottle ?'),
+                  style: FontStyleUtilities.t1(
+                    fontWeight: FWT.bold,
+                  )),
+            ],
+          ),
+          widget.orderHistory == true
+              ? const SizedBox()
+              : collectedBottleDropDown(),
+          widget.orderHistory == true
+              ? const SizedBox()
+              : const Divider(
+                  thickness: 1,
+                  height: 1,
+                  color: ColorUtils.kcDividerColor,
+                ),
+          SpaceUtils.ks10.height(),
+        ],
+      ),
+    );
+  }
+
+  Widget collectedBottleDropDown() {
+    return SizedBox(
+      height: 40,
+      width: double.infinity,
+      child: DropdownButton<String>(
+        isExpanded: true,
+        value: dropdownValue,
+        dropdownColor: Theme.of(context).cardColor,
+        icon: const Padding(
+            padding: EdgeInsets.only(bottom: 0),
+            child: Icon(
+              Icons.arrow_drop_down,
+              size: 30,
+              color: ColorUtils.kcPrimary,
+            )),
+        iconSize: 30,
+        elevation: 16,
+        style: FontStyleUtilities.t2(
+            fontWeight: FWT.semiBold, fontColor: ColorUtils.kcLightTextColor),
+        underline: Container(color: ColorUtils.kcTransparent),
+        onChanged: (String? newValue) {
+          setState(() {
+            dropdownValue = newValue!;
+          });
+        },
+        items:
+            <String>['Yes', 'No'].map<DropdownMenuItem<String>>((String value) {
+          return DropdownMenuItem<String>(
+            value: value,
+            child: Text(value),
           );
         }).toList(),
       ),

@@ -6,6 +6,7 @@ import 'package:water/main.dart';
 
 class ApiHandler {
   static Future<http.Response> get(String url, {bool useBaseUrl = true}) async {
+    print("I am here");
     print(useBaseUrl ? ApiUrls.baseUrl + url : url);
     print(authController.token.value);
     http.Response response = await http.get(
@@ -17,8 +18,6 @@ class ApiHandler {
     );
     return response;
   }
-
-
 
   static Future<http.Response> post(String url,
       {Map<String, dynamic>? body,
@@ -50,10 +49,8 @@ class ApiHandler {
 
   static Future<http.Response> delete(String url) async {
     print(Uri.parse(ApiUrls.baseUrl + url));
-    http.Response response =
-        await http.delete(Uri.parse(ApiUrls.baseUrl + url), headers: {
-      "api-token": authController.token.value
-    });
+    http.Response response = await http.delete(Uri.parse(ApiUrls.baseUrl + url),
+        headers: {"api-token": authController.token.value});
     return response;
   }
 }

@@ -7,10 +7,12 @@ import 'package:water/main.dart';
 import 'package:water/screen/home_screen/Profile/profile.dart';
 import 'package:water/screen/home_screen/order_screen/order_screen.dart';
 import 'package:water/utils/anim_util.dart';
+import 'package:water/utils/app_state.dart';
 import 'package:water/utils/color_utils.dart';
 import 'package:water/utils/custom_package/lazyindexedstack.dart';
 import 'package:water/utils/custom_package/visibilitybuilder.dart';
 import 'package:water/utils/icon_util.dart';
+import 'package:water/utils/uttil_helper.dart';
 
 import 'controller/home_controller.dart';
 
@@ -23,13 +25,13 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int selectedIndex = 1;
-  
 
-    @override
-    void initState() {
-      gets.remove('url');
-      super.initState();
-    }
+  @override
+  void initState() {
+    gets.remove('url');
+    super.initState();
+    UtilsHelper.loadLocalization(appState.currentLanguageCode.value);
+  }
 
   onTap(int index) {
     selectedIndex = index;
@@ -56,16 +58,17 @@ class _HomeScreenState extends State<HomeScreen> {
           elevation: 5,
           child: GestureDetector(
             onTap: () {
-              
               onTap(1);
               authController.updateProfile.value = false;
             },
             child: Container(
               height: 64,
               width: 64,
-              decoration:  BoxDecoration(
-                  shape: BoxShape.circle, 
-                  color:  selectedIndex == 1  ? ColorUtils.kcPrimary : ColorUtils.kcSecondary),
+              decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: selectedIndex == 1
+                      ? ColorUtils.kcPrimary
+                      : ColorUtils.kcSecondary),
               child: Container(
                 // color: ColorUtils.kcWhite,
                 padding: const EdgeInsets.all(16.0),
@@ -79,7 +82,7 @@ class _HomeScreenState extends State<HomeScreen> {
         height: 70,
         child: BottomAppBar(
           notchMargin: 10,
-          color:Theme.of(context).cardColor,
+          color: Theme.of(context).cardColor,
           shape: const CircularNotchedRectangle(),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 35),
@@ -87,14 +90,14 @@ class _HomeScreenState extends State<HomeScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 CustomIconButton(
-                  isSelected: selectedIndex == 0 ,
+                    isSelected: selectedIndex == 0,
                     onTap: () {
                       onTap(0);
                       authController.updateProfile.value = false;
                     },
                     path: IconUtil.users),
                 CustomIconButton(
-                    isSelected: selectedIndex == 2 ,
+                    isSelected: selectedIndex == 2,
                     onTap: () {
                       onTap(2);
                       authController.updateProfile.value = false;
@@ -118,7 +121,12 @@ class _HomeScreenState extends State<HomeScreen> {
 }
 
 class CustomIconButton extends StatelessWidget {
-  const CustomIconButton({super.key,this.isSelected=false,required this.onTap,this.color,required this.path});
+  const CustomIconButton(
+      {super.key,
+      this.isSelected = false,
+      required this.onTap,
+      this.color,
+      required this.path});
   final VoidCallback onTap;
   final Color? color;
   final String path;
@@ -129,15 +137,24 @@ class CustomIconButton extends StatelessWidget {
     return IconButton(
       padding: EdgeInsets.zero,
       icon: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16,vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(100),
-          color: isSelected == true? ColorUtils.kcPrimary : Colors.transparent ,
+          color: isSelected == true ? ColorUtils.kcPrimary : Colors.transparent,
         ),
         child: SvgPicture.asset(
           path,
-          color: isDark.value ? color ?? Colors.white : isSelected == true? Colors.white : color ?? ColorUtils.kcSecondary,
-          theme:  SvgTheme(currentColor: isDark.value ? Colors.white :isSelected == true? Colors.white : ColorUtils.kcSecondary),
+          color: isDark.value
+              ? color ?? Colors.white
+              : isSelected == true
+                  ? Colors.white
+                  : color ?? ColorUtils.kcSecondary,
+          theme: SvgTheme(
+              currentColor: isDark.value
+                  ? Colors.white
+                  : isSelected == true
+                      ? Colors.white
+                      : ColorUtils.kcSecondary),
         ),
       ),
       onPressed: () => onTap(),

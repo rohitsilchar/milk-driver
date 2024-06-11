@@ -13,10 +13,9 @@ import 'package:water/screen/splash.dart';
 import 'package:water/utils/app_state.dart';
 import 'package:water/utils/route.dart';
 import 'package:water/utils/uttil_helper.dart';
-import 'package:water/utils/widgets/loader.dart';
 
 import 'API/API_handler/lang.dart';
-import 'Utils/color_utils.dart';
+import 'Utils/color_utils.dart';  
 
 late AuthController authController;
 GetStorage gets = GetStorage();
@@ -27,22 +26,22 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   await GetStorage.init();
-   OneSignal.initialize("c2708dac-1973-44d7-9c86-d383e2a1c29e"); 
+  OneSignal.initialize("c2708dac-1973-44d7-9c86-d383e2a1c29e");
   //await firebaseMessaging();
- // var deviceTokenId = await FirebaseMessaging.instance.getToken();
- //print("tokenId $deviceTokenId");
+  // var deviceTokenId = await FirebaseMessaging.instance.getToken();
+  //print("tokenId $deviceTokenId");
   authController = Get.put(AuthController());
-  
+
   try {
-     final id = OneSignal.User.pushSubscription.id;
-    if(id != null){
-     // setOnesignalUserId(id);
+    final id = OneSignal.User.pushSubscription.id;
+    if (id != null) {
+      // setOnesignalUserId(id);
       await OneSignal.Notifications.requestPermission(true);
     }
     authController.getFromPrefs();
     gets.write('url', '1');
     if (gets.hasData('isDark')) {
-       isDark.value = gets.read('isDark');
+      isDark.value = gets.read('isDark');
     }
   } catch (e) {
     print(e.toString());
@@ -54,7 +53,6 @@ void main() async {
   ]);
 }
 
-
 class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
 
@@ -63,104 +61,104 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-
-@override
-void initState() {
- WidgetsBinding.instance.addPostFrameCallback((timeStamp) async{
-    await initSettings().then((value) {
-      appState.setting.value = value;
-      setState(() {  });
+  @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+      await initSettings().then((value) {
+        appState.setting.value = value;
+        setState(() {});
+      });
     });
- });
 
-    OneSignal.Notifications.addClickListener((result) async{
-       result.preventDefault();
+    OneSignal.Notifications.addClickListener((result) async {
+      result.preventDefault();
+
       /// notification.display() to display after preventing default
-       result.notification.display();
-       await notificationOpener(result);
+      result.notification.display();
+      await notificationOpener(result);
     });
-  
-super.initState();
-}
 
+    super.initState();
+  }
 
-   Future<void> notificationOpener(OSNotificationClickEvent result,{String? id}) async {
-     final order =json.decode(result.notification.rawPayload!['custom'].toString())['a']['order_id'];
-   //  final action = result.notification.rawPayload!['actionId'];
-      // print(result.notification.additionalData!['order_id']);
-     
-      if (gets.read("token") != null) {
-        
-          if (gets.hasData('url')) {
-            
-            Future.delayed(const Duration(milliseconds: 5000),() {
-                gets.remove('url');
-                
-                Navigator.of(navkey.currentState!.context).pushNamed("/order_detail",
-                arguments: [Datum(id: order),false]);
-            });
+  Future<void> notificationOpener(OSNotificationClickEvent result,
+      {String? id}) async {
+    final order =
+        json.decode(result.notification.rawPayload!['custom'].toString())['a']
+            ['order_id'];
+    //  final action = result.notification.rawPayload!['actionId'];
+    // print(result.notification.additionalData!['order_id']);
 
-          } else {
+    if (gets.read("token") != null) {
+      if (gets.hasData('url')) {
+        Future.delayed(const Duration(milliseconds: 5000), () {
+          gets.remove('url');
 
-              Navigator.of(navkey.currentState!.context).pushNamed(
-              "/order_detail",arguments: [ Datum(id: order),false ]);
-          }
-
+          Navigator.of(navkey.currentState!.context)
+              .pushNamed("/order_detail", arguments: [Datum(id: order), false]);
+        });
+      } else {
+        Navigator.of(navkey.currentState!.context)
+            .pushNamed("/order_detail", arguments: [Datum(id: order), false]);
       }
-        //  Navigator.push(navkey.currentState!.context, 
-        //  MaterialPageRoute(builder: (context) =>Loader(
-        //   product: Product(id:int.parse(blog.toString())),
-        //   action: action)));
-   }
-
+    }
+    //  Navigator.push(navkey.currentState!.context,
+    //  MaterialPageRoute(builder: (context) =>Loader(
+    //   product: Product(id:int.parse(blog.toString())),
+    //   action: action)));
+  }
 
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder<bool>(
-      valueListenable : isDark,
-      builder: (context,value,child) {
-        return ValueListenableBuilder(
+        valueListenable: isDark,
+        builder: (context, value, child) {
+          return ValueListenableBuilder(
               valueListenable: appState.currentLanguageCode,
               builder: (context, String languageCode, _) {
-            return GetMaterialApp(
-              debugShowCheckedModeBanner: false,
-              title: 'Driver FRESHU',
-              themeMode: value ? ThemeMode.dark : ThemeMode.light,
-              onGenerateRoute: RouteGenerator.generateRoute,
-              locale: Locale(languageCode),
-              theme: value==true ? ThemeData(
-                primaryColor: const Color.fromRGBO(20, 33, 41, 1),
-                cardColor: const Color.fromRGBO(20, 33, 41, 1),
-                brightness: Brightness.dark,
-                iconButtonTheme: const IconButtonThemeData(
-                    style: ButtonStyle(iconColor: MaterialStatePropertyAll(ColorUtils.kcPrimary))),
-                    scaffoldBackgroundColor: ColorUtils.kcSecondary,
-              ) : ThemeData(
-                primaryColor: ColorUtils.kcPrimary,
-                cardColor: Colors.white,
-                brightness: Brightness.light,
-                iconButtonTheme: const IconButtonThemeData(
-                    style: ButtonStyle(iconColor: MaterialStatePropertyAll(ColorUtils.kcPrimary))),
-                    scaffoldBackgroundColor: Colors.white,
-              ),
-              navigatorKey: navkey,
-                builder: (context, child) {
-                        child = Directionality(
-                          textDirection: UtilsHelper.rightHandLang
-                                  .contains(languageCode)
+                return GetMaterialApp(
+                  debugShowCheckedModeBanner: false,
+                  title: 'Mamas Milk Farm Driver App',
+                  themeMode: value ? ThemeMode.dark : ThemeMode.light,
+                  onGenerateRoute: RouteGenerator.generateRoute,
+                  locale: Locale(languageCode),
+                  theme: value == true
+                      ? ThemeData(
+                          primaryColor: const Color.fromRGBO(20, 33, 41, 1),
+                          cardColor: const Color.fromRGBO(20, 33, 41, 1),
+                          brightness: Brightness.dark,
+                          iconButtonTheme: const IconButtonThemeData(
+                              style: ButtonStyle(
+                                  iconColor: MaterialStatePropertyAll(
+                                      ColorUtils.kcPrimary))),
+                          scaffoldBackgroundColor: ColorUtils.kcSecondary,
+                        )
+                      : ThemeData(
+                          primaryColor: ColorUtils.kcPrimary,
+                          cardColor: Colors.white,
+                          brightness: Brightness.light,
+                          iconButtonTheme: const IconButtonThemeData(
+                              style: ButtonStyle(
+                                  iconColor: MaterialStatePropertyAll(
+                                      ColorUtils.kcPrimary))),
+                          scaffoldBackgroundColor: Colors.white,
+                        ),
+                  navigatorKey: navkey,
+                  builder: (context, child) {
+                    child = Directionality(
+                      textDirection:
+                          UtilsHelper.rightHandLang.contains(languageCode)
                               ? TextDirection.rtl
                               : TextDirection.ltr,
-                          child: child as Widget,
-                        ); //do something
+                      child: child as Widget,
+                    );
 
-                        return child;
-                      },
-              home: const SplashScreen(),
-            );
-          }
-        );
-      }
-    );
+                    return child;
+                  },
+                  home: const SplashScreen(),
+                );
+              });
+        });
   }
 }
 
@@ -258,3 +256,7 @@ super.initState();
 // ) async {
 //   print("iOS notification $title $body $payload");
 // }
+
+
+//8812988956
+//123456789

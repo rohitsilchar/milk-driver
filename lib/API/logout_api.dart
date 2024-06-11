@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
@@ -19,9 +17,8 @@ logOutService(context) async {
     withToken: false,
     useToken: true,
   );
-  authController.logOutLoading.value = false; 
+  authController.logOutLoading.value = false;
   if (response.statusCode == 200) {
-
     final box = GetStorage();
     box.erase();
     authController.onClose();

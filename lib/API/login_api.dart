@@ -38,6 +38,15 @@ loginService(context) async {
 
     final box = GetStorage();
 
+    // http.Response response = await ApiHandler.post(
+    //   "${ApiUrls.login}?phone=${authController.emailController.value.text.toString()}&password=${authController.passController.value.text}",
+    //   withToken: false,
+    //   body: {
+    //     "username": "admin",
+    //     "password": "123456",
+    //   },
+    //   useToken: false,
+    // );
     http.Response response = await ApiHandler.post(
       ApiUrls.login,
       withToken: false,
@@ -48,21 +57,27 @@ loginService(context) async {
       },
       useToken: false,
     );
+
+    print(response.body);
+    print(jsonDecode(response.body)['data']['api_token']);
     authController.loading.value = false;
     if (response.statusCode == 200) {
       box.write('token', jsonDecode(response.body)['data']['api_token']);
-      authController.token.value =jsonDecode(response.body)['data']['api_token'];
+      authController.token.value =
+          jsonDecode(response.body)['data']['api_token'];
       getProfileApi();
       getOrderApi(url: "", orderHistory: false);
       getNotificationCount();
       getOrderStatusApi();
       authController.loading.value = false;
       Get.offAll(() => const HomeScreen());
-      appSnackBar(
-        title: UtilsHelper.getString(context, "Success"),
-        message:  "${UtilsHelper.getString(context, "sign_in")} ${UtilsHelper.getString(context, "Success")}",
-        success: true,
-      );
+
+      // appSnackBar(
+      //   title: UtilsHelper.getString(context, "Success"),
+      //   message:
+      //       "${UtilsHelper.getString(context, "sign_in")} ${UtilsHelper.getString(context, "Success")}",
+      //   success: true,
+      // );
     } else {
       print(jsonDecode(response.body).toString());
       authController.loading.value = false;
