@@ -30,7 +30,6 @@ import '../../../utils/anim_util.dart';
 
 final HomeController homeController = Get.put(HomeController());
 
-
 class Profile extends StatefulWidget {
   const Profile({Key? key}) : super(key: key);
 
@@ -39,29 +38,35 @@ class Profile extends StatefulWidget {
 }
 
 class _ProfileState extends State<Profile> {
-
   // bool isDark = false;
   GetStorage gets = GetStorage();
+
+  @override
+  void initState() {
+    super.initState();
+    homeController.initializeData();
+  }
 
   @override
   Widget build(BuildContext context) {
     return StackedScaffold(
       stackedEntries: const [],
       tittle: UtilsHelper.getString(context, 'profile'),
-      actionIcon:Padding(
+      actionIcon: Padding(
         padding: const EdgeInsets.only(right: 12),
         child: InkResponse(
-            onTap: () {
-              isDark.value = !isDark.value;
-              gets.write('isDark',isDark.value);
-              setState(() {  });
-            },
-          child : Padding(
-            padding: const EdgeInsets.symmetric(vertical :12.0),
+          onTap: () {
+            isDark.value = !isDark.value;
+            gets.write('isDark', isDark.value);
+            setState(() {});
+          },
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 12.0),
             child: AnimateIcon(
-            child: isDark.value ? 
-             const Icon(Icons.sunny,key: ValueKey(1),color:Colors.white) 
-            : const Icon(Icons.nightlight,key: ValueKey(2)),
+              child: isDark.value
+                  ? const Icon(Icons.sunny,
+                      key: ValueKey(1), color: Colors.white)
+                  : const Icon(Icons.nightlight, key: ValueKey(2)),
             ),
           ),
         ),
@@ -79,30 +84,33 @@ class _ProfileState extends State<Profile> {
                 profileSecondTile(),
                 SpaceUtils.ks20.height(),
                 // profileThirdTile(),
-                 Obx(() => authController.updateProfile.isTrue
-              ? Padding(
-                padding: const EdgeInsets.symmetric(horizontal :26.0,vertical: 16),
-                child: SizedBox(
-                  width: MediaQuery.of(context).size.width,
-                  child: ArrowButton(
-                      onTap: () => updateProfile(),
-                      tittle: UtilsHelper.getString(context, "update"),
-                      isUpdate: true,
-                    ),
-                ),
-              )
-              : const SizedBox()),
+                Obx(() => authController.updateProfile.isTrue
+                    ? Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 26.0, vertical: 16),
+                        child: SizedBox(
+                          width: MediaQuery.of(context).size.width,
+                          child: ArrowButton(
+                            onTap: () => updateProfile(),
+                            tittle: UtilsHelper.getString(context, "update"),
+                            isUpdate: true,
+                          ),
+                        ),
+                      )
+                    : const SizedBox()),
                 SpaceUtils.ks20.height(),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                     ArrowButton(
-                  onTap: () async => selectLanguageBottomSheet(context, lang: appState.currentLanguageCode.value).then((value) {
-                    setState(() {   });
-                  }),
-                  tittle: UtilsHelper.getString(context, "select_language"),
-                  isUpdate: true,
-                ),
+                    ArrowButton(
+                      onTap: () async => selectLanguageBottomSheet(context,
+                              lang: appState.currentLanguageCode.value)
+                          .then((value) {
+                        setState(() {});
+                      }),
+                      tittle: UtilsHelper.getString(context, "select_language"),
+                      isUpdate: true,
+                    ),
                     ArrowButton(
                       onTap: () {
                         Get.dialog(Dialog(
@@ -111,10 +119,11 @@ class _ProfileState extends State<Profile> {
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                 Text(
-                                !UtilsHelper.rightHandLang.contains(appState.currentLanguageCode.value) 
-                                ? "Are you sure you want to sign out ?"
-                                : "هل أنت متأكد أنك تريد الخروج ؟",
+                                Text(
+                                  !UtilsHelper.rightHandLang.contains(
+                                          appState.currentLanguageCode.value)
+                                      ? "Are you sure you want to sign out ?"
+                                      : "هل أنت متأكد أنك تريد الخروج ؟",
                                   style: const TextStyle(fontSize: 17),
                                 ),
                                 const SizedBox(height: 16),
@@ -122,10 +131,15 @@ class _ProfileState extends State<Profile> {
                                   children: [
                                     Expanded(
                                       child: appButton(
-                                          title:UtilsHelper.getString(context, "sign_out"),
+                                          title: UtilsHelper.getString(
+                                              context, "sign_out"),
                                           onTap: () {
-                                            Navigator.pushAndRemoveUntil(context,
-                                             MaterialPageRoute(builder: (context) => const LoginScreen()), (route) => false);
+                                            Navigator.pushAndRemoveUntil(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        const LoginScreen()),
+                                                (route) => false);
                                             logOutService(context);
                                           }),
                                     ),
@@ -134,7 +148,8 @@ class _ProfileState extends State<Profile> {
                                       child: appButton(
                                         color: Colors.white,
                                         textColor: ColorUtils.kcSecondary,
-                                        title:UtilsHelper.getString(context, 'cancel'),
+                                        title: UtilsHelper.getString(
+                                            context, 'cancel'),
                                         onTap: () => Get.back(),
                                       ),
                                     ),
@@ -157,7 +172,7 @@ class _ProfileState extends State<Profile> {
             ),
           ),
           Obx(() => homeController.updateLoading.isTrue ||
-                  authController.logOutLoading.isTrue 
+                  authController.logOutLoading.isTrue
               ? const Loader()
               : const SizedBox())
         ],
@@ -192,11 +207,12 @@ class _ProfileState extends State<Profile> {
                   ],
                 )),
           ),
-          Obx(() =>  authController.image.value.toString().isNotEmpty && 
-          authController.image.value.toString() != "null" 
+          Obx(() => authController.image.value.toString().isNotEmpty &&
+                  authController.image.value.toString() != "null"
               ? CircleAvatar(
                   radius: 91 / 2,
-                  backgroundImage: CachedNetworkImageProvider("${ApiUrls.waterUrl}app-assets/images/drivers/${authController.image.value}"),
+                  backgroundImage: CachedNetworkImageProvider(
+                      "${ApiUrls.waterUrl}app-assets/images/drivers/${authController.image.value}"),
                 )
               : const CircleAvatar(
                   radius: 91 / 2,
@@ -218,76 +234,79 @@ class _ProfileState extends State<Profile> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                "${UtilsHelper.getString(context,'profile')} ${UtilsHelper.getString(context,'setting')}",
+                "${UtilsHelper.getString(context, 'profile')} ${UtilsHelper.getString(context, 'setting')}",
                 style: FontStyleUtilities.h5(fontWeight: FWT.bold),
               ),
               InkWell(
                   onTap: () {
                     authController.updateProfile.value = true;
                   },
-                  child: SvgPicture.asset(IconUtil.edit,
-                  color: isDark.value? Colors.white : null,))
+                  child: SvgPicture.asset(
+                    IconUtil.edit,
+                    color: isDark.value ? Colors.white : null,
+                  ))
             ],
           ),
           SpaceUtils.ks16.height(),
           Obx(() => editRow(
-                parameter: UtilsHelper.getString(context,'name'),
+                parameter: UtilsHelper.getString(context, 'name'),
                 value: authController.name.value.toString(),
                 controller: homeController.nameController.value,
               )),
           Obx(
             () => editRow(
-              parameter:  UtilsHelper.getString(context,'email_address'),
+              parameter: UtilsHelper.getString(context, 'email_address'),
               value: authController.email.value.toString(),
               controller: homeController.emailController.value,
             ),
           ),
           Obx(
             () => editRow(
-              parameter: UtilsHelper.getString(context,'phone_number'),
+              parameter: UtilsHelper.getString(context, 'phone_number'),
               value: authController.phone.value.toString(),
               controller: homeController.phoneController.value,
             ),
           ),
-         
         ],
       ),
     );
   }
 
-
-
 //   import 'package:flutter/material.dart';
 // import 'package:get_storage/get_storage.dart';
 
-Future<dynamic> selectLanguageBottomSheet(context,{required lang}) {
+  Future<dynamic> selectLanguageBottomSheet(context, {required lang}) {
     return showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
       builder: (context) {
         return Stack(
           children: [
-          ClipRRect(
-          child: Container(
-            margin: const EdgeInsets.symmetric(horizontal: 26,vertical: 30),
-            padding: const EdgeInsets.symmetric(
-              vertical: 30,
-              horizontal: 24,
-            ),
-           decoration: BoxDecoration(
-             borderRadius: BorderRadius.circular(20),
-             color: Theme.of(context).cardColor,
-           ),
-            child: 
-                SingleChildScrollView(
+            ClipRRect(
+              child: Container(
+                margin:
+                    const EdgeInsets.symmetric(horizontal: 26, vertical: 30),
+                padding: const EdgeInsets.symmetric(
+                  vertical: 30,
+                  horizontal: 24,
+                ),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  color: Theme.of(context).cardColor,
+                ),
+                child: SingleChildScrollView(
                   child: Column(
                     children: [
                       Text(
                         UtilsHelper.getString(context, "select_language"),
-                        style: Theme.of(context).textTheme.displayMedium?.copyWith(
-                              fontFamily: !UtilsHelper.rightHandLang.contains(lang)
-                                  ? UtilsHelper.wr_default_font_family
-                                  : UtilsHelper.the_sans_font_family,
+                        style: Theme.of(context)
+                            .textTheme
+                            .displayMedium
+                            ?.copyWith(
+                              fontFamily:
+                                  !UtilsHelper.rightHandLang.contains(lang)
+                                      ? UtilsHelper.wr_default_font_family
+                                      : UtilsHelper.the_sans_font_family,
                               color: isDark.value ? Colors.white : Colors.black,
                               fontSize: 24,
                               fontWeight: FontWeight.bold,
@@ -314,39 +333,65 @@ Future<dynamic> selectLanguageBottomSheet(context,{required lang}) {
                                       final get = GetStorage();
                                       homeController.detailLoading.value = true;
                                       setState(() {});
-                                      get.write("language", languageItem.languageCode);
-                                      appState.currentLanguageCode.value =languageItem.languageCode!;
+                                      get.write("language",
+                                          languageItem.languageCode);
+                                      appState.currentLanguageCode.value =
+                                          languageItem.languageCode!;
                                       // showLoader();
-                                      appState.languageKeys = await getKeysLists(appState.currentLanguageCode.value).then((value) {
-                                         homeController.detailLoading.value = false;
-                                         setState(() {});
-                                         return value;
+                                      appState.languageKeys =
+                                          await getKeysLists(appState
+                                                  .currentLanguageCode.value)
+                                              .then((value) {
+                                        homeController.detailLoading.value =
+                                            false;
+                                        setState(() {});
+                                        return value;
                                       });
                                       //  hideLoader();
-                                       setState(() {});
-                                       
-                                     Navigator.pushAndRemoveUntil(context,
-                                       MaterialPageRoute(builder: (context) => HomeScreen()),(route) => false);
+                                      setState(() {});
+
+                                      Navigator.pushAndRemoveUntil(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  HomeScreen()),
+                                          (route) => false);
                                     },
                                     prefixPath: 'asset/icons/icon_arrow.svg',
-                                    title: languageItem.languageName!.toUpperCase(),
+                                    title: languageItem.languageName!
+                                        .toUpperCase(),
                                     textStyle: Theme.of(context)
                                         .textTheme
                                         .bodyLarge
                                         ?.copyWith(
                                           fontSize: 14,
-                                          fontWeight: UtilsHelper.rightHandLang.contains(appState.currentLanguageCode.value) ?  FontWeight.w400 :  FontWeight.bold,
-                                          fontFamily: !UtilsHelper.rightHandLang.contains(appState.currentLanguageCode.value) 
-                                          ? 'Sands' :  UtilsHelper.the_sans_font_family,
+                                          fontWeight: UtilsHelper.rightHandLang
+                                                  .contains(appState
+                                                      .currentLanguageCode
+                                                      .value)
+                                              ? FontWeight.w400
+                                              : FontWeight.bold,
+                                          fontFamily: !UtilsHelper.rightHandLang
+                                                  .contains(appState
+                                                      .currentLanguageCode
+                                                      .value)
+                                              ? 'Sands'
+                                              : UtilsHelper
+                                                  .the_sans_font_family,
                                           color: ColorUtils.kcWhite,
                                         ),
                                     color: appState.currentLanguageCode.value ==
                                             languageItem.languageCode
-                                        ?  ColorUtils.kcPrimary
+                                        ? ColorUtils.kcPrimary
                                         : ColorUtils.kcSecondary,
                                   ),
                                   SizedBox(
-                                    height: index  == appState.setting.value.languages!.length -1 ? 0 : 20,
+                                    height: index ==
+                                            appState.setting.value.languages!
+                                                    .length -
+                                                1
+                                        ? 0
+                                        : 20,
                                   ),
                                 ],
                               );
@@ -397,23 +442,23 @@ Future<dynamic> selectLanguageBottomSheet(context,{required lang}) {
                     ],
                   ),
                 ),
-             ),
-           ), 
-           Positioned.fill(
-                child: Obx(() =>  homeController.detailLoading.isTrue
-                ?  ClipRRect(
-                   borderRadius: BorderRadius.circular(20),
-                  child: Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 26,vertical: 30),
-                  child:  const Loader()))
-                : const SizedBox()),
-              )
-            ],
-          );
+              ),
+            ),
+            Positioned.fill(
+              child: Obx(() => homeController.detailLoading.isTrue
+                  ? ClipRRect(
+                      borderRadius: BorderRadius.circular(20),
+                      child: Container(
+                          margin: const EdgeInsets.symmetric(
+                              horizontal: 26, vertical: 30),
+                          child: const Loader()))
+                  : const SizedBox()),
+            )
+          ],
+        );
       },
     );
   }
-
 
   // Profile Third Tile
   Widget profileThirdTile() {

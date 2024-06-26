@@ -77,12 +77,15 @@ class _OrderDetailsState extends State<OrderDetails> {
         widget.orderData.productOrders![0].deliveryStatus != null &&
                 widget.orderData.productOrders![0].deliveryStatus != null &&
                 widget.orderData.productOrders![0].deliveryStatus!.isNotEmpty
-            ? widget.orderData.productOrders![0].deliveryStatus![0].status!
+            ? widget.orderData.productOrders![0].deliveryStatus![0]
+                .deliveryStatus!.status
+                .toString()
             : '';
     selectedStatusId = widget.orderData.productOrders![0].deliveryStatus !=
                 null &&
             widget.orderData.productOrders![0].deliveryStatus!.isNotEmpty
-        ? widget.orderData.productOrders![0].deliveryStatus![0].id.toString()
+        ? widget.orderData.productOrders![0].deliveryStatus![0].orderStatusId
+            .toString()
         : null;
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
@@ -90,7 +93,9 @@ class _OrderDetailsState extends State<OrderDetails> {
         await getOrderDetail(url: widget.orderData.id.toString()).then((value) {
           order = value;
           selectedStatus = order.productOrders![0].deliveryStatus != null
-              ? order.productOrders![0].deliveryStatus![0].status!
+              ? order
+                  .productOrders![0].deliveryStatus![0].deliveryStatus!.status
+                  .toString()
               : '';
           selectedStatusId = order.productOrders![0].deliveryStatus != null
               ? order.productOrders![0].deliveryStatus![0].toString()
@@ -279,8 +284,8 @@ class _OrderDetailsState extends State<OrderDetails> {
           secondTileSubTile(
             tap: () {},
             title: UtilsHelper.getString(context, 'name'),
-            description: orderDetail.user!.name != null
-                ? orderDetail.user!.name.toString()
+            description: orderDetail.userOnly!.name != null
+                ? orderDetail.userOnly!.name.toString()
                 : "         --",
             path: IconUtil.user,
           ),
@@ -311,12 +316,12 @@ class _OrderDetailsState extends State<OrderDetails> {
           secondTileSubTile(
             tap: () async {
               await _launchCaller(
-                  mobileNumber: orderDetail.user!.phone.toString());
+                  mobileNumber: orderDetail.userOnly!.phone.toString());
             },
             title: UtilsHelper.getString(context, 'phone_number') ??
                 'Phone Number ',
-            description: orderDetail.user!.phone != null
-                ? orderDetail.user!.phone.toString()
+            description: orderDetail.userOnly!.phone != null
+                ? orderDetail.userOnly!.phone.toString()
                 : "",
             path: IconUtil.call,
           ),
@@ -369,7 +374,7 @@ class _OrderDetailsState extends State<OrderDetails> {
     );
   }
 
-  Widget productsTile({required ProductOrders orderDetail}) {
+  Widget productsTile({required ProductOrdersDriver orderDetail}) {
     print(
         "${ApiUrls.basicUrl}app-assets/images/products/${orderDetail.product!.image}");
     return CommonShadowContainer(
@@ -628,7 +633,8 @@ class _OrderDetailsState extends State<OrderDetails> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                  UtilsHelper.getString(context, 'Have You Collected Bottle ?'),
+                  UtilsHelper.getString(
+                      context, 'Have You Collected Empty Bottle ?'),
                   style: FontStyleUtilities.t1(
                     fontWeight: FWT.bold,
                   )),

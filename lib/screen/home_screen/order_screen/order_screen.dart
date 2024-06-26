@@ -7,6 +7,7 @@ import 'package:water/model/setting_data.dart';
 import 'package:water/screen/home_screen/controller/home_controller.dart';
 import 'package:water/screen/home_screen/home_screen.dart';
 import 'package:water/screen/home_screen/order_screen/widget/order_tile.dart';
+import 'package:water/screen/home_screen/qr_code_screen.dart';
 import 'package:water/screen/notification_screen/nofication.dart';
 import 'package:water/utils/anim_util.dart';
 import 'package:water/utils/color_utils.dart';
@@ -60,35 +61,47 @@ class _OrderListState extends State<OrderList> {
       tittle: widget.orderHistory
           ? "${UtilsHelper.getString(context, 'Order')} ${UtilsHelper.getString(context, 'History')}"
           : UtilsHelper.getString(context, 'your_orders'),
-      actionIcon: Stack(
+      actionIcon: Row(
         children: [
-          Transform.scale(
-            scale: .8,
-            child: CustomIconButton(
-              path: IconUtil.bell,
-              color: dark(context) ? Colors.white : ColorUtils.kcSecondary,
-              onTap: () {
-                getNotificationApi(url: "");
-                Get.to(() => const NotificationScreen());
-              },
-            ),
+          IconButton(
+            icon: const Icon(Icons.qr_code),
+            iconSize: 28,
+            onPressed: () {
+              Get.to(() => const QrCodeScreen());
+            },
+            color: dark(context) ? Colors.white : ColorUtils.kcSecondary,
           ),
-          Obx(
-            () => authController.notificationCount.value.toString() == "0"
-                ? const SizedBox()
-                : Positioned(
-                    right: 8,
-                    child: Container(
-                      padding: const EdgeInsets.all(6),
-                      decoration: const BoxDecoration(
-                          shape: BoxShape.circle, color: Colors.red),
-                      child: Text(
-                        authController.notificationCount.value.toString(),
-                        style: const TextStyle(color: Colors.white),
+          Stack(
+            children: [
+              Transform.scale(
+                scale: .8,
+                child: CustomIconButton(
+                  path: IconUtil.bell,
+                  color: dark(context) ? Colors.white : ColorUtils.kcSecondary,
+                  onTap: () {
+                    getNotificationApi(url: "");
+                    Get.to(() => const NotificationScreen());
+                  },
+                ),
+              ),
+              Obx(
+                () => authController.notificationCount.value.toString() == "0"
+                    ? const SizedBox()
+                    : Positioned(
+                        right: 8,
+                        child: Container(
+                          padding: const EdgeInsets.all(6),
+                          decoration: const BoxDecoration(
+                              shape: BoxShape.circle, color: Colors.red),
+                          child: Text(
+                            authController.notificationCount.value.toString(),
+                            style: const TextStyle(color: Colors.white),
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-          )
+              )
+            ],
+          ),
         ],
       ),
       body: Obx(
@@ -114,13 +127,35 @@ class _OrderListState extends State<OrderList> {
                                 shrinkWrap: true,
                                 physics: const NeverScrollableScrollPhysics(),
                                 itemCount: homeController.orderList.length,
-                                itemBuilder: (context, i) => OrderTile(
+                                itemBuilder: (context, i) {
+                                  if (widget.orderHistory
+                                      ? homeController
+                                              .orderList[i]
+                                              .productOrders![0]
+                                              .deliveryStatus![0]
+                                              .deliveryStatus!
+                                              .status!
+                                              .toString() ==
+                                          "Shipped"
+                                      : homeController
+                                              .orderList[i]
+                                              .productOrders![0]
+                                              .deliveryStatus![0]
+                                              .deliveryStatus!
+                                              .status!
+                                              .toString() ==
+                                          "Pending") {
+                                    return OrderTile(
                                       orderData: homeController.orderList[i],
                                       currency: sets.setting != null
                                           ? sets.setting!.defaultCurrencyCode
                                           : "\$",
                                       orderHistory: widget.orderHistory,
-                                    )),
+                                    );
+                                  } else {
+                                    return Container();
+                                  }
+                                }),
                             Obx(() => homeController.paginationLoading.isTrue
                                 ? const Align(
                                     alignment: Alignment.bottomCenter,

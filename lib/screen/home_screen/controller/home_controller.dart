@@ -33,4 +33,10 @@ class HomeController extends GetxController {
     phoneController.value.text = authController.phone.value.toString();
     super.onReady();
   }
+
+  initializeData() {
+    nameController.value.text = authController.name.value.toString();
+    emailController.value.text = authController.email.value.toString();
+    phoneController.value.text = authController.phone.value.toString();
+  }
 }

@@ -15,9 +15,13 @@ import '../../../../utils/uttil_helper.dart';
 class OrderTile extends StatefulWidget {
   final Datum orderData;
   final bool orderHistory;
- final String? currency;
+  final String? currency;
 
-  const OrderTile({super.key, required this.orderData,this.currency, required this.orderHistory});
+  const OrderTile(
+      {super.key,
+      required this.orderData,
+      this.currency,
+      required this.orderHistory});
 
   @override
   State<OrderTile> createState() => _OrderTileState();
@@ -42,18 +46,30 @@ class _OrderTileState extends State<OrderTile> {
                     Row(
                       children: [
                         Text(
-                         UtilsHelper.getString(context, 
-                         widget.orderData.productOrders!.isNotEmpty && widget.orderData.productOrders![0].deliveryStatus!.isNotEmpty ?
-                         widget.orderData.productOrders![0].deliveryStatus![0].status!.toLowerCase().split(' ').join('_') :""),
-                         style: FontStyleUtilities.h5(fontWeight: FWT.bold),
+                          UtilsHelper.getString(
+                              context,
+                              widget.orderData.productOrders!.isNotEmpty &&
+                                      widget.orderData.productOrders![0]
+                                          .deliveryStatus!.isNotEmpty
+                                  ? widget
+                                      .orderData
+                                      .productOrders![0]
+                                      .deliveryStatus![0]
+                                      .deliveryStatus!
+                                      .status!
+                                      .toLowerCase()
+                                      .split(' ') 
+                                      .join('_')
+                                  : ""),
+                          style: FontStyleUtilities.h5(fontWeight: FWT.bold),
                         ),
                         const Spacer(),
-                         Text(
-                              appState.setting.value.setting != null ?
-                              '${widget.orderData.finalAmount.toString()} ${widget.currency}':
-                            widget.orderData.finalAmount.toString(),
-                              style: FontStyleUtilities.h5(fontWeight: FWT.bold),
-                          ),
+                        Text(
+                          appState.setting.value.setting != null
+                              ? '${widget.orderData.finalAmount.toString()} ${widget.currency}'
+                              : widget.orderData.finalAmount.toString(),
+                          style: FontStyleUtilities.h5(fontWeight: FWT.bold),
+                        ),
                       ],
                     ),
                     SpaceUtils.ks7.height(),
@@ -64,21 +80,21 @@ class _OrderTileState extends State<OrderTile> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              '${UtilsHelper.getString(context,'order_id')} : #${widget.orderData.id}',
+                              '${UtilsHelper.getString(context, 'order_id')} : #${widget.orderData.id}',
                               style: FontStyleUtilities.t1(
                                   fontColor: ColorUtils.kcLightTextColor,
                                   fontWeight: FWT.bold),
                             ),
                             SpaceUtils.ks7.height(),
-                             Text(
-                                '${formatter.format(DateTime.parse(widget.orderData.createdAt.toString()))} | ${formatter1.format(DateTime.parse(widget.orderData.createdAt.toString()))}',
-                                style: FontStyleUtilities.t1(
-                                  fontColor: ColorUtils.kcLightTextColor,
-                                ),
-                            ),
-                             SpaceUtils.ks7.height(),
                             Text(
-                              '${UtilsHelper.getString(context,'customer')} : ${widget.orderData.user!.name != null ? widget.orderData.user!.name.toString() : "  --"}',
+                              '${formatter.format(DateTime.parse(widget.orderData.createdAt.toString()))} | ${formatter1.format(DateTime.parse(widget.orderData.createdAt.toString()))}',
+                              style: FontStyleUtilities.t1(
+                                fontColor: ColorUtils.kcLightTextColor,
+                              ),
+                            ),
+                            SpaceUtils.ks7.height(),
+                            Text(
+                              '${UtilsHelper.getString(context, 'customer')} : ${widget.orderData.userOnly!.name != null ? widget.orderData.userOnly!.name.toString() : "  --"}',
                               style: FontStyleUtilities.t1(
                                 fontColor: ColorUtils.kcLightTextColor,
                               ),
@@ -99,7 +115,7 @@ class _OrderTileState extends State<OrderTile> {
                             orderData: widget.orderData,
                             orderHistory: widget.orderHistory,
                           )),
-                      tittle:UtilsHelper.getString(context, 'view_details'),
+                      tittle: UtilsHelper.getString(context, 'view_details'),
                     ),
                     SpaceUtils.ks16.height(),
                   ],
