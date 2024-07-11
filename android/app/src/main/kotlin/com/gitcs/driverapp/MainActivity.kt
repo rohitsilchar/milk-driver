@@ -1,4 +1,4 @@
-package subscription.driverapp.com
+package com.gitcs.driverapp
 
 import io.flutter.embedding.android.FlutterActivity
 

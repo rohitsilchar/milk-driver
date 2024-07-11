@@ -3,10 +3,11 @@ import 'package:get/get.dart';
 import 'package:water/API/get_notification_api.dart';
 import 'package:water/API/get_order_api.dart';
 import 'package:water/main.dart';
+import 'package:water/model/get_order_model.dart';
 import 'package:water/model/setting_data.dart';
 import 'package:water/screen/home_screen/controller/home_controller.dart';
 import 'package:water/screen/home_screen/home_screen.dart';
-import 'package:water/screen/home_screen/order_screen/widget/order_tile.dart';
+import 'package:water/screen/home_screen/order_screen/widget/order_history_tile.dart';
 import 'package:water/screen/home_screen/qr_code_screen.dart';
 import 'package:water/screen/notification_screen/nofication.dart';
 import 'package:water/utils/anim_util.dart';
@@ -15,23 +16,23 @@ import 'package:water/utils/fonstyle.dart';
 import 'package:water/utils/icon_util.dart';
 import 'package:water/utils/whitespaceutils.dart';
 import 'package:water/utils/widgets/stackedscaffold.dart';
-
 import '../../../utils/app_state.dart';
 import '../../../utils/uttil_helper.dart';
 
-class OrderList extends StatefulWidget {
-  final bool orderHistory;
-
-  const OrderList({Key? key, required this.orderHistory}) : super(key: key);
+class OrderHistory extends StatefulWidget {
+  const OrderHistory({
+    Key? key,
+  }) : super(key: key);
 
   @override
-  State<OrderList> createState() => _OrderListState();
+  State<OrderHistory> createState() => _OrderHistoryState();
 }
 
-class _OrderListState extends State<OrderList> {
+class _OrderHistoryState extends State<OrderHistory> {
   HomeController homeController = Get.put(HomeController());
 
   ScrollController? controller;
+  List<Datum> filteredOrders = [];
 
   @override
   void initState() {
@@ -59,9 +60,8 @@ class _OrderListState extends State<OrderList> {
   Widget build(BuildContext context) {
     return StackedScaffold(
       stackedEntries: const [],
-      tittle: widget.orderHistory
-          ? "${UtilsHelper.getString(context, 'Order')} ${UtilsHelper.getString(context, 'History')}"
-          : UtilsHelper.getString(context, 'your_orders'),
+      tittle:
+          "${UtilsHelper.getString(context, 'Order')} ${UtilsHelper.getString(context, 'History')}",
       actionIcon: Row(
         children: [
           IconButton(
@@ -114,7 +114,7 @@ class _OrderListState extends State<OrderList> {
                   color: ColorUtils.kcPrimary,
                 )))
             // ignore: prefer_is_empty
-            : homeController.orderList.length > 0
+            : homeController.orderList.isNotEmpty
                 ? ValueListenableBuilder<SettingData>(
                     valueListenable: appState.setting,
                     builder: (context, sets, child) {
@@ -131,12 +131,12 @@ class _OrderListState extends State<OrderList> {
                                         const NeverScrollableScrollPhysics(),
                                     itemCount: homeController.orderList.length,
                                     itemBuilder: (context, i) {
-                                      return OrderTile(
+                                      return OrderHistoryTile(
                                         orderData: homeController.orderList[i],
                                         currency: sets.setting != null
                                             ? sets.setting!.defaultCurrencyCode
                                             : "\$",
-                                        orderHistory: widget.orderHistory,
+                                        orderHistory: true,
                                       );
                                     })
                                 : const Text("No Orders Found"),

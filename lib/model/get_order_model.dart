@@ -22,7 +22,12 @@ class GetOrderModel {
 
   factory GetOrderModel.fromJson(Map<String, dynamic> json) => GetOrderModel(
         success: json["success"],
-        data: json["data"] == null ? null : Data.fromJson(json["data"]),
+        // data: json["data"] == null ? null : Data.fromJson(json["data"]),
+        data: json["data"] == null ||
+                json["data"] is Map && json["data"].isEmpty ||
+                json['data'] == []
+            ? null
+            : Data.fromJson(json["data"]),
         message: json["message"],
       );
 
@@ -111,11 +116,11 @@ class Datum {
   int? orderStatusId;
   int? deliveryAddressId;
   int? paymentId;
-  int? promotionalDisount;
+  double? promotionalDisount;
   int? isCouponApplied;
   String? couponCode;
   int? subtotal;
-  int? finalAmount;
+  double? finalAmount;
   int? tax;
   int? deliveryFee;
   String? paymentMethod;
@@ -123,7 +128,8 @@ class Datum {
   String? orderPlatform;
   DateTime? createdAt;
   DateTime? updatedAt;
-  List<ProductOrdersDriver>? productOrders;
+  int? bottlesNotReturnedCount;
+  List<ProductOrdersDriver>? productOrdersDriver;
   Status? orderStatus;
   dynamic cancelRequest;
   UserOnly? userOnly;
@@ -147,7 +153,8 @@ class Datum {
     this.orderPlatform,
     this.createdAt,
     this.updatedAt,
-    this.productOrders,
+    this.bottlesNotReturnedCount,
+    this.productOrdersDriver,
     this.orderStatus,
     this.cancelRequest,
     this.userOnly,
@@ -160,11 +167,21 @@ class Datum {
         orderStatusId: json["order_status_id"],
         deliveryAddressId: json["delivery_address_id"],
         paymentId: json["payment_id"],
-        promotionalDisount: json["promotional_disount"],
+        // promotionalDisount: json["promotional_disount"],
+        promotionalDisount: json["promotional_discount"] != null
+            ? (json["promotional_discount"] is int
+                ? (json["promotional_discount"] as int).toDouble()
+                : json["promotional_discount"] as double)
+            : null,
         isCouponApplied: json["is_coupon_applied"],
         couponCode: json["coupon_code"],
         subtotal: json["subtotal"],
-        finalAmount: json["final_amount"],
+        // finalAmount: json["final_amount"],
+        finalAmount: json["final_amount"] != null
+            ? (json["final_amount"] is int
+                ? (json["final_amount"] as int).toDouble()
+                : json["final_amount"] as double)
+            : null,
         tax: json["tax"],
         deliveryFee: json["delivery_fee"],
         paymentMethod: json["payment_method"],
@@ -176,7 +193,8 @@ class Datum {
         updatedAt: json["updated_at"] == null
             ? null
             : DateTime.parse(json["updated_at"]),
-        productOrders: json["product_orders_driver"] == null
+        bottlesNotReturnedCount: json["bottles_not_returned_count"],
+        productOrdersDriver: json["product_orders_driver"] == null
             ? []
             : List<ProductOrdersDriver>.from(json["product_orders_driver"]!
                 .map((x) => ProductOrdersDriver.fromJson(x))),
@@ -210,9 +228,10 @@ class Datum {
         "order_platform": orderPlatform,
         "created_at": createdAt?.toIso8601String(),
         "updated_at": updatedAt?.toIso8601String(),
-        "product_orders_driver": productOrders == null
+        "bottles_not_returned_count": bottlesNotReturnedCount,
+        "product_orders_driver": productOrdersDriver == null
             ? []
-            : List<dynamic>.from(productOrders!.map((x) => x.toJson())),
+            : List<dynamic>.from(productOrdersDriver!.map((x) => x.toJson())),
         "order_status": orderStatus?.toJson(),
         "cancel_request": cancelRequest,
         "user_only": userOnly?.toJson(),
@@ -314,7 +333,7 @@ class Status {
 
   factory Status.fromJson(Map<String, dynamic> json) => Status(
         id: json["id"],
-        status: json["status"],
+        status: json["status"]!,
         createdAt: json["created_at"],
         updatedAt: json["updated_at"],
       );
@@ -326,6 +345,11 @@ class Status {
         "updated_at": updatedAt,
       };
 }
+
+// enum StatusEnum { PENDING, SHIPPED }
+
+// final statusEnumValues =
+//     EnumValues({"Pending": StatusEnum.PENDING, "Shipped": StatusEnum.SHIPPED});
 
 class ProductOrdersDriver {
   int? id;
@@ -344,7 +368,7 @@ class ProductOrdersDriver {
   DateTime? createdAt;
   dynamic updatedAt;
   Product? product;
-  List<ProductDeliverysStatus>? deliveryStatus;
+  List<ProductDeliverysStatus>? productDeliverysStatus;
 
   ProductOrdersDriver({
     this.id,
@@ -363,7 +387,7 @@ class ProductOrdersDriver {
     this.createdAt,
     this.updatedAt,
     this.product,
-    this.deliveryStatus,
+    this.productDeliverysStatus,
   });
 
   factory ProductOrdersDriver.fromJson(Map<String, dynamic> json) =>
@@ -390,7 +414,7 @@ class ProductOrdersDriver {
         updatedAt: json["updated_at"],
         product:
             json["product"] == null ? null : Product.fromJson(json["product"]),
-        deliveryStatus: json["product_deliverys_status"] == null
+        productDeliverysStatus: json["product_deliverys_status"] == null
             ? []
             : List<ProductDeliverysStatus>.from(
                 json["product_deliverys_status"]!
@@ -416,9 +440,10 @@ class ProductOrdersDriver {
         "created_at": createdAt?.toIso8601String(),
         "updated_at": updatedAt,
         "product": product?.toJson(),
-        "product_deliverys_status": deliveryStatus == null
+        "product_deliverys_status": productDeliverysStatus == null
             ? []
-            : List<dynamic>.from(deliveryStatus!.map((x) => x.toJson())),
+            : List<dynamic>.from(
+                productDeliverysStatus!.map((x) => x.toJson())),
       };
 }
 
@@ -503,11 +528,13 @@ class Product {
 }
 
 class ProductDeliverysStatus {
+  int? id;
   int? productOrderId;
   int? orderStatusId;
   Status? deliveryStatus;
 
   ProductDeliverysStatus({
+    this.id,
     this.productOrderId,
     this.orderStatusId,
     this.deliveryStatus,
@@ -515,6 +542,7 @@ class ProductDeliverysStatus {
 
   factory ProductDeliverysStatus.fromJson(Map<String, dynamic> json) =>
       ProductDeliverysStatus(
+        id: json["id"],
         productOrderId: json["product_order_id"],
         orderStatusId: json["order_status_id"],
         deliveryStatus: json["delivery_status"] == null
@@ -523,6 +551,7 @@ class ProductDeliverysStatus {
       );
 
   Map<String, dynamic> toJson() => {
+        "id": id,
         "product_order_id": productOrderId,
         "order_status_id": orderStatusId,
         "delivery_status": deliveryStatus?.toJson(),

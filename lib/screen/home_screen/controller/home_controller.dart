@@ -25,6 +25,10 @@ class HomeController extends GetxController {
   Rx<TextEditingController> emailController = TextEditingController().obs;
   Rx<TextEditingController> phoneController = TextEditingController().obs;
 
+  Rx<TextEditingController> isCollectedController = TextEditingController().obs;
+  Rx<TextEditingController> collectedCountController =
+      TextEditingController().obs;
+
   @override
   void onReady() {
     // TODO: implement onReady

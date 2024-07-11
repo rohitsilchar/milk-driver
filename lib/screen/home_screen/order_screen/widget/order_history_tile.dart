@@ -12,22 +12,22 @@ import 'package:water/utils/icon_util.dart';
 import '../../../../utils/app_state.dart';
 import '../../../../utils/uttil_helper.dart';
 
-class OrderTile extends StatefulWidget {
+class OrderHistoryTile extends StatefulWidget {
   final Datum orderData;
   final bool orderHistory;
   final String? currency;
 
-  const OrderTile(
+  const OrderHistoryTile(
       {super.key,
       required this.orderData,
       this.currency,
       required this.orderHistory});
 
   @override
-  State<OrderTile> createState() => _OrderTileState();
+  State<OrderHistoryTile> createState() => _OrderHistoryTileState();
 }
 
-class _OrderTileState extends State<OrderTile> {
+class _OrderHistoryTileState extends State<OrderHistoryTile> {
   @override
   Widget build(BuildContext context) {
     return CommonShadowContainer(
@@ -46,7 +46,7 @@ class _OrderTileState extends State<OrderTile> {
                     Row(
                       children: [
                         Text(
-                          "Pending",
+                          "Shipped",
                           style: FontStyleUtilities.h5(fontWeight: FWT.bold),
                         ),
                         const Spacer(),

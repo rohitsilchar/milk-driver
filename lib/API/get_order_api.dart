@@ -36,13 +36,24 @@ Future getOrderApi({url, orderHistory}) async {
   print(response.body);
   print("ORDER LIST::: ${response.body}");
 
+  Map<String, dynamic> responseData = json.decode(response.body);
+
   if (response.statusCode == 200) {
     if (url.toString() == "" || url.toString() == null) {
       homeController.orderList.value = [];
     }
+
     GetOrderModel getOrderModel = getOrderModelFromJson(response.body);
 
     // ignore: avoid_function_literals_in_foreach_calls
+
+    dynamic data = responseData['data'];
+    if (data is Map && data.isEmpty) {
+      homeController.orderList.value = [];
+      homeController.orderLoading.value = false;
+      return;
+    }
+
     getOrderModel.data!.data!.forEach((element) {
       homeController.orderList.add(element);
     });
@@ -52,6 +63,7 @@ Future getOrderApi({url, orderHistory}) async {
     if (getOrderModel.data!.nextPageUrl.toString() != "null") {
       homeController.isPaging.value = true;
     }
+
     homeController.paginationLoading.value = false;
   } else {
     homeController.orderLoading.value = false;

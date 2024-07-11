@@ -1,6 +1,7 @@
 ///FRAME WORK IMPORT...
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 ///PACKAGES DEPENDED ON...
 import 'package:flutter_svg/flutter_svg.dart';
@@ -9,6 +10,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:water/API/API_handler/api_urls.dart';
 import 'package:water/API/change_order_status_api.dart';
+import 'package:water/API/collect_bottle_count_api.dart';
 import 'package:water/API/get_notification_api.dart';
 import 'package:water/API/get_order_api.dart';
 import 'package:water/Utils/color_utils.dart';
@@ -46,8 +48,11 @@ class OrderDetails extends StatefulWidget {
 
 class _OrderDetailsState extends State<OrderDetails> {
   HomeController homeController = Get.put(HomeController());
+  TextEditingController noOfBottle = TextEditingController();
 
-  String dropdownValue = 'No';
+  // String dropdownValue = 'No';
+  String? dropdownValue;
+  bool? isBottleCollected;
 
   int selectedIndex = 1;
   late Datum order;
@@ -73,33 +78,43 @@ class _OrderDetailsState extends State<OrderDetails> {
   void initState() {
     super.initState();
     order = widget.orderData;
-    selectedStatus =
-        widget.orderData.productOrders![0].deliveryStatus != null &&
-                widget.orderData.productOrders![0].deliveryStatus != null &&
-                widget.orderData.productOrders![0].deliveryStatus!.isNotEmpty
-            ? widget.orderData.productOrders![0].deliveryStatus![0]
-                .deliveryStatus!.status
-                .toString()
-            : '';
-    selectedStatusId = widget.orderData.productOrders![0].deliveryStatus !=
+    selectedStatus = widget
+                    .orderData.productOrdersDriver![0].productDeliverysStatus !=
                 null &&
-            widget.orderData.productOrders![0].deliveryStatus!.isNotEmpty
-        ? widget.orderData.productOrders![0].deliveryStatus![0].orderStatusId
+            widget.orderData.productOrdersDriver![0].productDeliverysStatus !=
+                null &&
+            widget.orderData.productOrdersDriver![0].productDeliverysStatus!
+                .isNotEmpty
+        ? widget.orderData.productOrdersDriver![0].productDeliverysStatus![0]
+            .deliveryStatus!.status
             .toString()
-        : null;
+        : '';
+    selectedStatusId =
+        widget.orderData.productOrdersDriver![0].productDeliverysStatus !=
+                    null &&
+                widget.orderData.productOrdersDriver![0].productDeliverysStatus!
+                    .isNotEmpty
+            ? widget.orderData.productOrdersDriver![0]
+                .productDeliverysStatus![0].orderStatusId
+                .toString()
+            : null;
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
-      if (widget.orderData.productOrders![0].deliveryStatus == null) {
+      if (widget.orderData.productOrdersDriver![0].productDeliverysStatus ==
+          null) {
         await getOrderDetail(url: widget.orderData.id.toString()).then((value) {
           order = value;
-          selectedStatus = order.productOrders![0].deliveryStatus != null
-              ? order
-                  .productOrders![0].deliveryStatus![0].deliveryStatus!.status
-                  .toString()
-              : '';
-          selectedStatusId = order.productOrders![0].deliveryStatus != null
-              ? order.productOrders![0].deliveryStatus![0].toString()
-              : null;
+          selectedStatus =
+              order.productOrdersDriver![0].productDeliverysStatus != null
+                  ? order.productOrdersDriver![0].productDeliverysStatus![0]
+                      .deliveryStatus!.status
+                      .toString()
+                  : '';
+          selectedStatusId =
+              order.productOrdersDriver![0].productDeliverysStatus != null
+                  ? order.productOrdersDriver![0].productDeliverysStatus![0]
+                      .toString()
+                  : null;
           setState(() {});
         });
       }
@@ -182,11 +197,11 @@ class _OrderDetailsState extends State<OrderDetails> {
                 children: [
                   SpaceUtils.ks18.height(),
                   SpaceUtils.ks120.height(),
-                  order.productOrders == null
+                  order.productOrdersDriver == null
                       ? const ShimmerLoader(height: 100)
                       : orderDetailFirstTile(orderData: order),
                   SpaceUtils.ks24.height(),
-                  order.productOrders == null
+                  order.productOrdersDriver == null
                       ? SizedBox(
                           width: MediaQuery.of(context).size.width,
                           child: const Row(
@@ -233,7 +248,7 @@ class _OrderDetailsState extends State<OrderDetails> {
                           ),
                         ),
                   SpaceUtils.ks24.height(),
-                  order.productOrders == null
+                  order.productOrdersDriver == null
                       ? const ShimmerLoader(height: 250)
                       : selectedIndex == 0
                           ? secondTile(orderDetail: order)
@@ -250,16 +265,16 @@ class _OrderDetailsState extends State<OrderDetails> {
                                           fontWeight: FWT.semiBold),
                                     ),
                                     SpaceUtils.ks10.height(),
-                                    ...order.productOrders!.map(
+                                    ...order.productOrdersDriver!.map(
                                         (e) => productsTile(orderDetail: e))
                                   ]),
                             ),
                   SpaceUtils.ks24.height(),
-                  order.productOrders == null
+                  order.productOrdersDriver == null
                       ? const ShimmerLoader(height: 250)
                       : paymentSummary(orderDetail: order),
                   SpaceUtils.ks24.height(),
-                  order.productOrders == null
+                  order.productOrdersDriver == null
                       ? const ShimmerLoader(height: 250)
                       : collectedSummary(orderDetail: order),
                   SpaceUtils.ks40.height(),
@@ -303,7 +318,7 @@ class _OrderDetailsState extends State<OrderDetails> {
                         orderDetail.deliveryAddress!.latitude.toString()),
                     date:
                         "${formatter.format(DateTime.parse(orderDetail.createdAt.toString()))} | ${formatter1.format(DateTime.parse(orderDetail.createdAt.toString()))}",
-                    items: orderDetail.productOrders!.length.toString(),
+                    items: orderDetail.productOrdersDriver!.length.toString(),
                     paymentMethod: orderDetail.paymentMethod.toString(),
                   ),
                 );
@@ -500,7 +515,7 @@ class _OrderDetailsState extends State<OrderDetails> {
               ),
               const SizedBox(width: 6),
               Text(
-                '${orderData.productOrders!.length.toString()} ${UtilsHelper.getString(context, 'items')}',
+                '${orderData.productOrdersDriver!.length.toString()} ${UtilsHelper.getString(context, 'items')}',
                 style: FontStyleUtilities.t1(
                   fontColor: ColorUtils.kcLightTextColor,
                 ),
@@ -508,6 +523,12 @@ class _OrderDetailsState extends State<OrderDetails> {
             ],
           ),
           SpaceUtils.ks10.height(),
+          Row(
+            children: [
+              Text(
+                  "Collect bottles: ${widget.orderData.bottlesNotReturnedCount}"),
+            ],
+          ),
         ],
       ),
     );
@@ -623,35 +644,78 @@ class _OrderDetailsState extends State<OrderDetails> {
   }
 
   Widget collectedSummary({required Datum orderDetail}) {
-    return CommonShadowContainer(
-      margin: const EdgeInsets.symmetric(horizontal: 27),
-      padding: const EdgeInsets.all(15),
-      child: Column(
-        children: [
-          SpaceUtils.ks10.height(),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                  UtilsHelper.getString(
-                      context, 'Have You Collected Empty Bottle ?'),
-                  style: FontStyleUtilities.t1(
-                    fontWeight: FWT.bold,
-                  )),
-            ],
-          ),
-          widget.orderHistory == true
-              ? const SizedBox()
-              : collectedBottleDropDown(),
-          widget.orderHistory == true
-              ? const SizedBox()
-              : const Divider(
-                  thickness: 1,
-                  height: 1,
-                  color: ColorUtils.kcDividerColor,
-                ),
-          SpaceUtils.ks10.height(),
-        ],
+    return Visibility(
+      visible: widget.orderData.bottlesNotReturnedCount != 0,
+      child: CommonShadowContainer(
+        margin: const EdgeInsets.symmetric(horizontal: 27),
+        padding: const EdgeInsets.all(15),
+        child: Column(
+          children: [
+            SpaceUtils.ks10.height(),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                    UtilsHelper.getString(
+                        context, 'Have You Collected Empty Bottle ?'),
+                    style: FontStyleUtilities.t1(
+                      fontWeight: FWT.bold,
+                    )),
+              ],
+            ),
+            widget.orderHistory == true
+                ? const SizedBox()
+                : collectedBottleDropDown(),
+            widget.orderHistory == true
+                ? const SizedBox()
+                : const Divider(
+                    thickness: 1,
+                    height: 1,
+                    color: ColorUtils.kcDividerColor,
+                  ),
+            SpaceUtils.ks20.height(),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                    UtilsHelper.getString(
+                        context, 'How many bottles collected?'),
+                    style: FontStyleUtilities.t1(
+                      fontWeight: FWT.bold,
+                    )),
+              ],
+            ),
+            SpaceUtils.ks10.height(),
+            widget.orderHistory == true
+                ? const SizedBox()
+                : TextField(
+                    controller: noOfBottle,
+                    keyboardType: TextInputType.number,
+                    // obscureText: isObs!,
+                    decoration: InputDecoration.collapsed(
+                        hintText: "Enter number of bottles collected",
+                        hintStyle: FontStyleUtilities.t1(
+                            fontWeight: FWT.medium,
+                            fontColor: ColorUtils.kcLightTextColor)),
+                    textAlign: TextAlign.left,
+                    style: FontStyleUtilities.t1(
+                        fontWeight: FWT.medium,
+                        fontColor: ColorUtils.kcLightTextColor)),
+            SpaceUtils.ks20.height(),
+            ArrowButton(
+              isBusy: homeController.updateLoading.value,
+              onTap: () async {
+                FocusScope.of(context).unfocus();
+                updateCollectedBottle(
+                    isBottleCollected!,
+                    noOfBottle.text.toString(),
+                    widget.orderData.productOrdersDriver![0].productDeliverysStatus![0].id
+                        .toString());
+              },
+              tittle: "Submit",
+            )
+          ],
+        ),
       ),
     );
   }
@@ -662,6 +726,7 @@ class _OrderDetailsState extends State<OrderDetails> {
       width: double.infinity,
       child: DropdownButton<String>(
         isExpanded: true,
+        hint: const Text("Select Option"),
         value: dropdownValue,
         dropdownColor: Theme.of(context).cardColor,
         icon: const Padding(
@@ -679,6 +744,7 @@ class _OrderDetailsState extends State<OrderDetails> {
         onChanged: (String? newValue) {
           setState(() {
             dropdownValue = newValue!;
+            isBottleCollected = newValue == "Yes" ? true : false;
           });
         },
         items:

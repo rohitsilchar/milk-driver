@@ -19,6 +19,7 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen> {
   GetStorage gets = GetStorage();
 
+
   @override
   void initState() {
     getKeysLists(appState.currentLanguageCode.value).then((value) {
@@ -42,6 +43,8 @@ class _SplashScreenState extends State<SplashScreen> {
     });
     // });
     super.initState();
+
+    // showLocationPermissionDialog(context);
   }
 
   @override

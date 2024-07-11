@@ -25,4 +25,5 @@ class ApiUrls {
   static String deleteNotification = "driver/notification/delete/all";
   static String countNotification = "driver/notification/count";
   static String notification = "driver/notification/list";
+  static String collectBottles = "driver/order/update-bottle-status";
 }

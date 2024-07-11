@@ -1,12 +1,10 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:water/API/get_order_api.dart';
 import 'package:water/main.dart';
 import 'package:water/screen/home_screen/Profile/profile.dart';
+import 'package:water/screen/home_screen/order_screen/order_history.dart';
 import 'package:water/screen/home_screen/order_screen/order_screen.dart';
-import 'package:water/utils/anim_util.dart';
 import 'package:water/utils/app_state.dart';
 import 'package:water/utils/color_utils.dart';
 import 'package:water/utils/custom_package/lazyindexedstack.dart';
@@ -113,7 +111,7 @@ class _HomeScreenState extends State<HomeScreen> {
         children: const [
           Profile(),
           OrderList(orderHistory: false),
-          OrderList(orderHistory: true),
+          OrderHistory(),
         ],
       ),
     );
